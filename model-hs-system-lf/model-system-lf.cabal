@@ -43,7 +43,7 @@ build-type:          Simple
 extra-source-files:  ChangeLog.md
 
 -- Constraint on the version of Cabal needed to build this package.
-cabal-version:       >=1.10
+cabal-version:       >=1.24
 
 
 library
