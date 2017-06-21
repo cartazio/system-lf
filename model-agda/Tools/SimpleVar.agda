@@ -3,9 +3,19 @@ module Tools.SimpleVar where
 -- you should configure you environment to have both the
 -- standard lib available and the agda-prelude by ulf,
 -- cause i'm not sure which i'm going to end up using :)
-open import Prelude.Nat
-open import Prelude.Fin
+
+open import Data.Nat
 
 
-data 1DVar : Nat  -> Set where
-  Var : ∀ {n : Nat}  -> Fin n -> 1DVar n
+open import Data.Fin
+
+
+data 1DVar : ℕ  -> Set where
+  Var : ∀ {n : ℕ }  -> Fin n -> 1DVar n
+
+data TyContext (Texp : (ℕ -> Set))  (freeTvars : ℕ)  : ℕ -> Set where
+  emptyTy :  TyContext Texp freeTvars 0
+  consTy : ∀ {m : ℕ } → ( Texp freeTvars) ->  TyContext Texp freeTvars m
+          ->  TyContext Texp freeTvars (ℕ.suc m)
+
+tyContextWeakening : 
