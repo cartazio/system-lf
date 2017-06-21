@@ -18,4 +18,15 @@ data TyContext (Texp : (ℕ -> Set))  (freeTvars : ℕ)  : ℕ -> Set where
   consTy : ∀ {m : ℕ } → ( Texp freeTvars) ->  TyContext Texp freeTvars m
           ->  TyContext Texp freeTvars (ℕ.suc m)
 
-tyContextWeakening : 
+
+{-
+i actually want this to be a little bit stronger, but i go stuck
+
+: ∀  {texp : ℕ -> Set} -> (∀ {n} texp n -> texp (ℕ.suc n))
+              -> (∀ {m len}  TyContext texp m len -> TyContext texp (ℕ.suc m) len)
+  -- but it got confusing 
+-}
+tyContextWeakening : ∀ {m len} {texp : ℕ -> Set} -> ( texp m -> texp (ℕ.suc m))
+              ->   TyContext texp m len -> TyContext texp (ℕ.suc m) len
+tyContextWeakening {m} {len} {texp }f emptyTy = emptyTy
+tyContextWeakening {m} {len} {texp } f (consTy x ctx) = consTy (f x) (tyContextWeakening f ctx)
