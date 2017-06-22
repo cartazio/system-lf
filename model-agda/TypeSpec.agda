@@ -118,20 +118,6 @@ decLinPO any1 >=1 = no (λ ())
 decLinPO any1 one = no (λ ())
 decLinPO any1 any1 = yes reflLin
 
-pordPred : Lin -> Lin -> Bool
-pordPred irr y = true
-pordPred x irr = false
-pordPred x any1 = true
-pordPred any1 y = false
-pordPred <=1 <=1 = true
-pordPred <=1 >=1 = false
-pordPred <=1 one = false
-pordPred >=1 <=1 = false
-pordPred >=1 >=1 = true
-pordPred >=1 one = false
-pordPred one <=1 = true
-pordPred one >=1 = true
-pordPred one one = true
 
 
 infixr 6 _::_
