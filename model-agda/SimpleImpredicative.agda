@@ -1,5 +1,5 @@
 {-# OPTIONS --type-in-type #-}
-module Simple where
+module SimpleImpredicative where
 
 
 id0 : ∀ {a : Set } ->   a -> a

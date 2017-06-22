@@ -4,7 +4,7 @@ module Tools.SimpleVar where
 -- standard lib available and the agda-prelude by ulf,
 -- cause i'm not sure which i'm going to end up using :)
 
-open import Data.Nat
+open import Data.Nat as Nat
 
 
 open import Data.Fin
@@ -24,9 +24,16 @@ i actually want this to be a little bit stronger, but i go stuck
 
 : ∀  {texp : ℕ -> Set} -> (∀ {n} texp n -> texp (ℕ.suc n))
               -> (∀ {m len}  TyContext texp m len -> TyContext texp (ℕ.suc m) len)
-  -- but it got confusing 
+  -- but it got confusing
+
+
 -}
 tyContextWeakening : ∀ {m len} {texp : ℕ -> Set} -> ( texp m -> texp (ℕ.suc m))
               ->   TyContext texp m len -> TyContext texp (ℕ.suc m) len
 tyContextWeakening {m} {len} {texp }f emptyTy = emptyTy
 tyContextWeakening {m} {len} {texp } f (consTy x ctx) = consTy (f x) (tyContextWeakening f ctx)
+
+tyContextWeakeningG : ∀ {m len } (c : ℕ ) {texp : ℕ -> Set} -> ( texp m -> texp (m Nat.+ c))
+              ->   TyContext texp m len -> TyContext texp (m Nat.+ c) len
+tyContextWeakeningG {m} {len} c {texp }f emptyTy = emptyTy
+tyContextWeakeningG {m} {len} c {texp } f (consTy x ctx) = consTy (f x) (tyContextWeakeningG c f ctx)
