@@ -78,6 +78,46 @@ eqPred any1 <=1 = no (λ ())
 eqPred any1 >=1 = no (λ ())
 eqPred any1 one = no (λ ())
 
+
+data FullPoLin :  Lin -> Lin -> Set  where
+  reflLin : ∀ {m} -> FullPoLin m m 
+  irrLTOne : FullPoLin irr one
+  irrLT>=1 : FullPoLin irr >=1
+  irrLT<=1 : FullPoLin irr <=1
+  irrLTany1 : FullPoLin irr any1
+  oneLT<=1 : FullPoLin one <=1
+  oneLT>=1 : FullPoLin one >=1
+  oneLTany1 : FullPoLin one any1
+  <=1LTany1 : FullPoLin <=1 any1
+  >=1LTany1 : FullPoLin >=1 any1
+
+decLinPO : ∀ (x y : Lin ) -> Dec (FullPoLin x y )
+decLinPO irr irr = yes reflLin
+decLinPO irr <=1 = yes irrLT<=1
+decLinPO irr >=1 = yes irrLT>=1
+decLinPO irr one = yes irrLTOne
+decLinPO irr any1 = yes irrLTany1
+decLinPO <=1 irr = no (λ ())
+decLinPO <=1 <=1 = yes reflLin
+decLinPO <=1 >=1 = no (λ ())
+decLinPO <=1 one = no (λ ())
+decLinPO <=1 any1 = yes <=1LTany1
+decLinPO >=1 irr = no (λ ())
+decLinPO >=1 <=1 = no (λ ())
+decLinPO >=1 >=1 = yes reflLin
+decLinPO >=1 one = no (λ ())
+decLinPO >=1 any1 = yes >=1LTany1
+decLinPO one irr = no (λ ())
+decLinPO one <=1 = yes oneLT<=1
+decLinPO one >=1 = yes oneLT>=1
+decLinPO one one = yes reflLin
+decLinPO one any1 = yes oneLTany1
+decLinPO any1 irr = no (λ ())
+decLinPO any1 <=1 = no (λ ())
+decLinPO any1 >=1 = no (λ ())
+decLinPO any1 one = no (λ ())
+decLinPO any1 any1 = yes reflLin
+
 pordPred : Lin -> Lin -> Bool
 pordPred irr y = true
 pordPred x irr = false
@@ -104,10 +144,37 @@ forall x , irr <= x
 -}
 
 
--- ℕ == \bN 
+-- ℕ == \bN
+-- sugared version of τS 
+data τS ( fv : ℕ) : Set where
+  var : Fin fv -> τS fv
+  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τS n) -> (Telescope (n Nat.+ fv )  Lin τS m) -> τS fv
+  ⊕ : ∀ {s} -> Vec (τS fv) s -> τS fv -- ⊕ == \oplus 
+  ⊗ : ∀ {s} -> Telescope fv Lin τS s -> τS fv -- ⊗ == \otimes 
+  choice : ∀ {s} -> Vec (τS fv) s -> τS fv -- & 
+  par : ∀ {s} -> Vec (τS fv) s -> τS fv -- \& == ⅋
+{-
+We should like to SHOW that all of ⊗ ⊕ ⅋ and & are internalized by Π_Σ_ under CBN or CBV or something 
+
+-}
+
+
 data τ ( fv : ℕ) : Set where
   var : Fin fv -> τ fv
-  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τ n) -> (Telescope (n Nat.+ fv )  Lin τ m) -> τ fv 
+  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τ n) -> (Telescope (n Nat.+ fv )  Lin τ m) -> τ fv
+  ⊕ : ∀ {s} -> Vec (τ fv) s -> τ fv -- ⊕ == \oplus 
+  choice : ∀ {s} -> Vec (τ fv) s -> τ fv -- & 
+-- need to 
+
+--- core erased usage  types
+-- the 4 tuple operators should be definabled with just this :)
+-- after linearity / usage erasure 
+data τF ( fv : ℕ) : Set where
+  var : Fin fv -> τF fv
+  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τF n) -> (Telescope (n Nat.+ fv )  Lin τF m) -> τF fv
+ --- for 
+
+
 
 -- \vdash == ⊢
 -- τ == \ tau
