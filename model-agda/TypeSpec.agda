@@ -6,18 +6,18 @@ open import Function
 open import Data.Unit
 open import Data.Star as Star
 open import Relation.Nullary as Decidable
-open import Data.Nat as Nat 
+open import Data.Nat as Nat
 open import Data.Vec
 open import Level as ℓ -- \ell
 open import Data.Bool as B  --
 open import Relation.Binary as RB
-open import Relation.Binary.PropositionalEquality 
+open import Relation.Binary.PropositionalEquality
 
 
 
 
 {-
-one approach 
+one approach
 irrlevant == {}
 atmost 1 == {≤1}  ==? { ==1, <1 }
 exactly1 == { =1 }
@@ -27,32 +27,32 @@ unrestricted == {=1, ≥1, ≤1} ==? {=1, >1, <1}
 issue with this... {} === {<1} right? ie  irrelevant == "<1"
 
 instead of rig on symbols, have rig on sets? (would negation be complementation???)
-+ == union 
-* == intersection 
++ == union
+* == intersection
 
 lets take this model and name all our "subsets"
 
 
 -}
-data Lin : Set where -- linearity lattice, name not stable :) 
+data Lin : Set where -- linearity lattice, name not stable :)
   irr : Lin -- {} or { <1} , think irr == <1 , AKA zero or 0 or ∅
   <=1 : Lin -- {<1, ==1}
   >=1 : Lin -- {>1, ==1}
-  --  >1  : Lin -- {<1} -- users should never be able to write this exotic element 
+  --  >1  : Lin -- {<1} -- users should never be able to write this exotic element
   --   !1  : Lin -- {<1,>1} -- users should never be able to write this exotic element
   one : Lin -- {==1}
   any1 : Lin -- {==1,>1,<1}
 
 
-data LinPOrd : Lin -> Lin -> Set where 
+data LinPOrd : Lin -> Lin -> Set where
   irrZero : LinPOrd Lin.irr Lin.one
   unresTop<=1 : LinPOrd Lin.<=1 Lin.any1
   unresTop>=1 : LinPOrd Lin.>=1 Lin.any1
   oneLT<=1 : LinPOrd Lin.one Lin.<=1
-  oneLT>=1 : LinPOrd Lin.one Lin.>=1 
+  oneLT>=1 : LinPOrd Lin.one Lin.>=1
 
-eqPred : (x : Lin) -> (y : Lin ) -> Dec (x ≡ y ) 
-eqPred one one = yes refl 
+eqPred : (x : Lin) -> (y : Lin ) -> Dec (x ≡ y )
+eqPred one one = yes refl
 eqPred irr irr = yes refl
 eqPred >=1 >=1 = yes refl
 eqPred <=1 <=1 = yes refl
@@ -80,7 +80,7 @@ eqPred any1 one = no (λ ())
 
 
 data FullPoLin :  Lin -> Lin -> Set  where
-  reflLin : ∀ {m} -> FullPoLin m m 
+  reflLin : ∀ {m} -> FullPoLin m m
   irrLTOne : FullPoLin irr one
   irrLT>=1 : FullPoLin irr >=1
   irrLT<=1 : FullPoLin irr <=1
@@ -122,26 +122,26 @@ decLinPO any1 any1 = yes reflLin
 
 
 infixr 6 _::_
--- ⊔ == \lub 
+-- ⊔ == \lub
 data Telescope {i j} (fv : ℕ ) (A : Set j ) (F : ℕ -> Set i )  : ℕ → Set ( ( i ℓ.⊔ j  )) where
-  []  :  Telescope fv A  F  0 
-  _::_ : ∀ { n : ℕ } → Telescope fv A F n -> A ->  F (fv Nat.+ n) -> Telescope fv A F (ℕ.suc n)  
+  []  :  Telescope fv A  F  0
+  _::_ : ∀ { n : ℕ } → Telescope fv A F n -> A ->  F (fv Nat.+ n) -> Telescope fv A F (ℕ.suc n)
 {-
-forall x , irr <= x 
+forall x , irr <= x
 -}
 
 
 -- ℕ == \bN
--- sugared version of τS 
+-- sugared version of τS
 data τS ( fv : ℕ) : Set where
   var : Fin fv -> τS fv
-  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τS n) -> (Telescope (n Nat.+ fv )  Lin τS m) -> τS fv -- Π_Σ_ == \Pi_\Sigma_ 
-  ⊕ : ∀ {s} -> Vec (τS fv) s -> τS fv -- ⊕ == \oplus 
-  ⊗ : ∀ {s} -> Telescope fv Lin τS s -> τS fv -- ⊗ == \otimes 
-  choice : ∀ {s} -> Vec (τS fv) s -> τS fv -- & , often called 'with' 
+  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τS n) -> (Telescope (n Nat.+ fv )  Lin τS m) -> τS fv -- Π_Σ_ == \Pi_\Sigma_
+  ⊕ : ∀ {s} -> Vec (τS fv) s -> τS fv -- ⊕ == \oplus
+  ⊗ : ∀ {s} -> Telescope fv Lin τS s -> τS fv -- ⊗ == \otimes
+  choice : ∀ {s} -> Vec (τS fv) s -> τS fv -- & , often called 'with'
   par : ∀ {s} -> Vec (τS fv) s -> τS fv -- \& == ⅋ is the other name
 {-
-We should like to SHOW that all of ⊗ ⊕ ⅋ and & are internalized by Π_Σ_ under CBN or CBV or something 
+We should like to SHOW that all of ⊗ ⊕ ⅋ and & are internalized by Π_Σ_ under CBN or CBV or something
 -- definitely dont need built in ⊗ or par/⅋
 
 note:
@@ -150,46 +150,51 @@ the following should be "equivalences/definitially true"
 1 = ⊗[],
 ⊤ = &[],
 ⊥ = ⅋[],
-0 = ⊕[] 
+0 = ⊕[]
 "units/true/false"
 
 likewise, for f,h ∈ (⊗,&), (⊕,⅋)
-¬ f ( a) ( b) == h  ( ¬ a) (¬ ) 
+¬ f ( a) ( b) == h  ( ¬ a) (¬ )
 
 the classical laws (including double negation elim)
 ¬ ¬ a = a  -- an involution! often written (_)^{⊥}
--- one way to think about negation is you switch the side of the turnstyle ⊢   
+-- one way to think about negation is you switch the side of the turnstyle ⊢
 ¬ (a ⊗ b)= ¬ a ⅋ ¬ b
-¬ (a ⊕ b) = ¬ a & ¬ b 
-¬ (a & b) = ¬ a ⊕ ¬ b 
-¬ (a ⅋ b) = ¬ a ⊗ ¬ b 
-¬ 1 = ⊥ 
-¬ 0 = ⊤ 
+¬ (a ⊕ b) = ¬ a & ¬ b
+¬ (a & b) = ¬ a ⊕ ¬ b
+¬ (a ⅋ b) = ¬ a ⊗ ¬ b
+¬ 1 = ⊥
+¬ 0 = ⊤
 ¬ ⊥ = 1
 ¬ ⊤ = 0
+
+the exponentials are ! and ?
+and if included they obey
+¬(!a)= ?(¬ a)
+¬(?a)= !(¬ a)
 -}
 
 
 data τ ( fv : ℕ) : Set where
   var : Fin fv -> τ fv
   Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τ n) -> (Telescope (n Nat.+ fv )  Lin τ m) -> τ fv
-  ⊕ : ∀ {s} -> Vec (τ fv) s -> τ fv -- ⊕ == \oplus 
-  choice : ∀ {s} -> Vec (τ fv) s -> τ fv -- & 
--- need to 
+  ⊕ : ∀ {s} -> Vec (τ fv) s -> τ fv -- ⊕ == \oplus
+  choice : ∀ {s} -> Vec (τ fv) s -> τ fv -- &
+-- need to
 
 --- core erased usage  types
 -- the 4 tuple operators should be definabled with just this :)
--- after linearity / usage erasure 
+-- after linearity / usage erasure
 data τF ( fv : ℕ) : Set where
   var : Fin fv -> τF fv
   Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τF n) -> (Telescope (n Nat.+ fv )  Lin τF m) -> τF fv
-  -- replace Lin with Unit 
+  -- replace Lin with Unit
 
--- 
---- for 
+--
+--- for
 
 
 
 -- \vdash == ⊢
 -- τ == \ tau
--- data WFτ  
+-- data WFτ
