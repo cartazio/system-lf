@@ -120,6 +120,7 @@ decLinPO any1 any1 = yes reflLin
 
 
 
+
 infixr 6 _::_
 -- ⊔ == \lub 
 data Telescope {i j} (fv : ℕ ) (A : Set j ) (F : ℕ -> Set i )  : ℕ → Set ( ( i ℓ.⊔ j  )) where
@@ -134,14 +135,38 @@ forall x , irr <= x
 -- sugared version of τS 
 data τS ( fv : ℕ) : Set where
   var : Fin fv -> τS fv
-  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τS n) -> (Telescope (n Nat.+ fv )  Lin τS m) -> τS fv
+  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τS n) -> (Telescope (n Nat.+ fv )  Lin τS m) -> τS fv -- Π_Σ_ == \Pi_\Sigma_ 
   ⊕ : ∀ {s} -> Vec (τS fv) s -> τS fv -- ⊕ == \oplus 
   ⊗ : ∀ {s} -> Telescope fv Lin τS s -> τS fv -- ⊗ == \otimes 
-  choice : ∀ {s} -> Vec (τS fv) s -> τS fv -- & 
-  par : ∀ {s} -> Vec (τS fv) s -> τS fv -- \& == ⅋
+  choice : ∀ {s} -> Vec (τS fv) s -> τS fv -- & , often called 'with' 
+  par : ∀ {s} -> Vec (τS fv) s -> τS fv -- \& == ⅋ is the other name
 {-
 We should like to SHOW that all of ⊗ ⊕ ⅋ and & are internalized by Π_Σ_ under CBN or CBV or something 
+-- definitely dont need built in ⊗ or par/⅋
 
+note:
+for f ∈ ⊗,⊕,⅋,&
+the following should be "equivalences/definitially true"
+1 = ⊗[],
+⊤ = &[],
+⊥ = ⅋[],
+0 = ⊕[] 
+"units/true/false"
+
+likewise, for f,h ∈ (⊗,&), (⊕,⅋)
+¬ f ( a) ( b) == h  ( ¬ a) (¬ ) 
+
+the classical laws (including double negation elim)
+¬ ¬ a = a  -- an involution! often written (_)^{⊥}
+-- one way to think about negation is you switch the side of the turnstyle ⊢   
+¬ (a ⊗ b)= ¬ a ⅋ ¬ b
+¬ (a ⊕ b) = ¬ a & ¬ b 
+¬ (a & b) = ¬ a ⊕ ¬ b 
+¬ (a ⅋ b) = ¬ a ⊗ ¬ b 
+¬ 1 = ⊥ 
+¬ 0 = ⊤ 
+¬ ⊥ = 1
+¬ ⊤ = 0
 -}
 
 
@@ -158,7 +183,10 @@ data τ ( fv : ℕ) : Set where
 data τF ( fv : ℕ) : Set where
   var : Fin fv -> τF fv
   Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τF n) -> (Telescope (n Nat.+ fv )  Lin τF m) -> τF fv
- --- for 
+  -- replace Lin with Unit 
+
+-- 
+--- for 
 
 
 
