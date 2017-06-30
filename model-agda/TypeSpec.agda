@@ -162,7 +162,7 @@ the classical laws (including double negation elim)
 ¬ (a ⊗ b)= ¬ a ⅋ ¬ b
 ¬ (a ⊕ b) = ¬ a & ¬ b
 ¬ (a & b) = ¬ a ⊕ ¬ b
-¬ (a ⅋ b) = ¬ a ⊗ ¬ b
+¬ (a ⅋ b) = ¬ a ⊗ ¬ b --- this one leads to (a⅋b) == ¬ (¬ a ⊗ ¬ b), which  is interesting :)
 ¬ 1 = ⊥
 ¬ 0 = ⊤
 ¬ ⊥ = 1
@@ -172,6 +172,31 @@ the exponentials are ! and ?
 and if included they obey
 ¬(!a)= ?(¬ a)
 ¬(?a)= !(¬ a)
+-}
+{-
+for ⊸
+ to input : type "\r-o" or "\r" or "\multimap" or "\-o" with Agda input method
+and for ×ₖ write \_k for letter or number k
+-}
+
+{-
+how to thinkabout a ⅋ b :
+a⅋b == ¬ ¬ (a ⅋ b )
+(via double negation elim)
+¬ ¬ (a ⅋ b ) == ¬ (¬ a ⊗ ¬ b)
+(via duality of negation )
+
+then if we desugar ¬ a == a ⊸ ∀ x . x
+or as ¬ a = ∀ x , a ⊸ x
+then we can read
+ ¬ (¬ a ⊗ ¬ b) == ∀ x₁ , ((∀ x₂ . a ⊸ x₂) ⊗ (∀ x₃ . a ⊸ x₃ ) ⊸ x₁
+
+I then claim that
+A⅋B ⇒ (or perhaps ≥ or even ≡ !! )
+    ≡   ∀ x . ∀ y .
+          [(A ⊸ x) ⊗  (B ⊸ y)] ⊸ (x ⊗ y)
+
+
 -}
 
 
