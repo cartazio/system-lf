@@ -197,6 +197,38 @@ A⅋B ⇒ (or perhaps ≥ or even ≡ !! )
           [(A ⊸ x) ⊗  (B ⊸ y)] ⊸ (x ⊗ y)
 
 
+lets think about it another way
+
+A ⊸ B ≡ ¬ A ⅋ B
+-- double negate
+      ≡ ¬ ¬ (¬ A ⅋ B)
+      ≡ ¬ ( ¬ ¬ A ⊗ ¬ B)
+   (misusing ⊥ here perhaps?)
+      ?? ==? [ ((A ⊸ ⊥ )⊸ ⊥) ⊗ ( B ⊸ ⊥)   ] ⊸ ⊥
+
+             send an A to the "implication"
+             provide the return continuation for the B you get back
+
+         -- lets make it clearer with double negation elim
+          == ( A ⊗ (B ⊸ ⊥)) ⊸ ⊥
+          -- give an A and provide the rest of the computation
+          --/ return continuation
+         -- aka "callback"
+
+--------------
+¬ ¬ A ⅋ ¬ ¬ B ≡ ¬ A ⊸ ¬ ¬ B ≡ ¬ A ⊸ B
+    OR ≡ ¬ B ⊸ ¬ ¬ A ≡ ¬ B ⊸ A
+(because A ⅋ B ≡ B ⅋ A )
+
+----------
+¬ ¬  (A ⅋ B) ≡ ( A ⊸ ⊥ ⊗ B⊸ ⊥ ) ⊸ ⊥
+two different continuations / contexts, each receiving one of A and B
+------------------
+(¬ A ⅋ ¬ B ) ≡ ¬ ¬ (¬ A ⅋ ¬ B) ≡
+       (by double negation elim plus duality)
+             ≡    ( A ⊗ B) ⊸ ⊥
+--- this is just multiple return values / returning a tuple to the
+-- continuation
 -}
 
 
