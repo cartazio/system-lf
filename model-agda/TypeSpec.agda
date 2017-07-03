@@ -1,19 +1,33 @@
+{-# OPTIONS --experimental-irrelevance #-}
+
 module TypeSpec where
 
+{-
+-- open import Data.Fin
+-- open import Function
+-- open import Data.Unit
+-- open import Data.Star as Star
+-- open import Relation.Nullary as Decidable
+-- open import Data.Nat as Nat
+-- open import Data.Vec
+-- open import Level as ℓ -- \ell
+-- import Data.Unit as Unit
+-- open import Data.Bool as B  --
+-- open import Relation.Binary as RB
+-- open import Relation.Binary.PropositionalEquality
+-}
 
-open import Data.Fin
-open import Function
-open import Data.Unit
-open import Data.Star as Star
-open import Relation.Nullary as Decidable
-open import Data.Nat as Nat
-open import Data.Vec
-open import Level as ℓ -- \ell
-open import Data.Bool as B  --
-open import Relation.Binary as RB
-open import Relation.Binary.PropositionalEquality
-
-
+open import Prelude.Nat as Nat
+open import Prelude.Fin
+open import Prelude.Decidable as Decidable
+open import Prelude.Equality as Eq
+open import Agda.Primitive as ℓ
+open import Prelude.Semiring renaming ( one to semi1)
+open import Prelude.Vec
+open import Prelude.Unit as Unit
+open import Prelude.Product
+open import Prelude.Functor
+open import Agda.Builtin.Size
 
 
 {-
@@ -78,7 +92,12 @@ eqPred any1 <=1 = no (λ ())
 eqPred any1 >=1 = no (λ ())
 eqPred any1 one = no (λ ())
 
+instance
+  EqLin : Eq Lin
+  _==_ {{EqLin}} = eqPred
 
+
+-- you can read "FullPoLin a b" as "a ≤ b"
 data FullPoLin :  Lin -> Lin -> Set  where
   reflLin : ∀ {m} -> FullPoLin m m
   irrLTOne : FullPoLin irr one
@@ -121,11 +140,39 @@ decLinPO any1 any1 = yes reflLin
 
 
 
-infixr 6 _::_
+infixr 5 _::_
 -- ⊔ == \lub
-data Telescope {i j} (fv : ℕ ) (A : Set j ) (F : ℕ -> Set i )  : ℕ → Set ( ( i ℓ.⊔ j  )) where
+data Telescope {i j} (fv : Nat ) (A : Set j ) (F : Nat -> Set i )  : Nat → Set ( ( i ℓ.⊔ j  )) where
   []  :  Telescope fv A  F  0
-  _::_ : ∀ { n : ℕ } → Telescope fv A F n -> A ->  F (fv Nat.+ n) -> Telescope fv A F (ℕ.suc n)
+  _::_ : ∀ { n : Nat } →  A ×  F (fv + n) -> Telescope fv A F n -> Telescope fv A F (Nat.suc n)
+
+tcons-inj-head : ∀ {i j } {fv : Nat} {A : Set j}  {F : Nat -> Set i}  {n}
+                 {x y : A ×  F (fv + n)}
+                   {xs ys : Telescope fv A  F n} → (x :: xs ) ≡ ( y :: ys ) → ((x ≡ y)  )
+tcons-inj-head refl = refl
+
+
+tcons-inj-tail : ∀ {i j } {fv : Nat} {A : Set j} {F : Nat -> Set i}   {n}
+                 {x y : A ×  F (fv + n)}
+                   {xs ys : Telescope fv A  F n} →(x :: xs ) ≡ ( y :: ys ) → xs ≡ ys
+tcons-inj-tail refl = refl
+
+
+instance
+  EqTel : ∀  {a i} { A : Set a}  {{EqA : Eq A }} {fv : Nat } {F : Nat -> Set i} {{EqF : ∀ {j : Nat} → Eq (F (fv + j)) }} {n}  -> Eq (Telescope fv A F n)
+  _==_ {{EqTel}} [] [] = yes refl
+  _==_ {{EqTel}} (x :: xs ) (y :: ys )  with x == y
+  ... | no neq = no λ eq -> neq (tcons-inj-head eq)
+  ... | yes eq  with xs == ys
+  ...    | no neq = no λ eqT -> neq (tcons-inj-tail eqT)
+  ...    | yes eqT  =  yes ( _::_ $≡ eq *≡ eqT) -- (Telescope._::_ Eq.$≡ eq *≡ eqT)
+
+
+teleMap : ∀ {a b} {fv s : Nat } {A : Set a} {B : Set a} {F : Nat -> Set b} {G : Nat -> Set b}
+            (f : ∀ {i : Nat} -> A × F (fv + i) -> B × G (fv + i ))-> Telescope fv A F s -> Telescope fv B G s
+teleMap f [] = []
+teleMap f (x :: xs) = f x :: teleMap f xs
+
 {-
 forall x , irr <= x
 -}
@@ -133,9 +180,9 @@ forall x , irr <= x
 
 -- ℕ == \bN
 -- sugared version of τS
-data τS ( fv : ℕ) : Set where
+data τS ..{i : Size } ( fv : Nat ) : Set where
   var : Fin fv -> τS fv
-  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τS n) -> (Telescope (n Nat.+ fv )  Lin τS m) -> τS fv -- Π_Σ_ == \Pi_\Sigma_
+  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τS n) -> (Telescope (n + fv )  Lin τS m) -> τS fv -- Π_Σ_ == \Pi_\Sigma_
   ⊕ : ∀ {s} -> Vec (τS fv) s -> τS fv -- ⊕ == \oplus
   ⊗ : ∀ {s} -> Telescope fv Lin τS s -> τS fv -- ⊗ == \otimes
   choice : ∀ {s} -> Vec (τS fv) s -> τS fv -- & , often called 'with'
@@ -221,10 +268,11 @@ A ⊸ B ≡ ¬ A ⅋ B
 (because A ⅋ B ≡ B ⅋ A )
 
 ----------
-¬ ¬  (A ⅋ B) ≡ ( A ⊸ ⊥ ⊗ B⊸ ⊥ ) ⊸ ⊥
+¬ ¬  (A ⅋ B) ≡ ( A ⊸ ⊥ ⊗ B ⊸ ⊥ ) ⊸ ⊥
 two different continuations / contexts, each receiving one of A and B
 ------------------
-(¬ A ⅋ ¬ B ) ≡ ¬ ¬ (¬ A ⅋ ¬ B) ≡
+(¬ A ⅋ ¬ B ) ≡ ¬ ¬ (¬ A ⅋ ¬ B)
+             ≡ ¬ (¬ ¬ A ⊗ ¬ ¬ B )
        (by double negation elim plus duality)
              ≡    ( A ⊗ B) ⊸ ⊥
 --- this is just multiple return values / returning a tuple to the
@@ -232,20 +280,37 @@ two different continuations / contexts, each receiving one of A and B
 -}
 
 
-data τ ( fv : ℕ) : Set where
-  var : Fin fv -> τ fv
-  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τ n) -> (Telescope (n Nat.+ fv )  Lin τ m) -> τ fv
-  ⊕ : ∀ {s} -> Vec (τ fv) s -> τ fv -- ⊕ == \oplus
-  choice : ∀ {s} -> Vec (τ fv) s -> τ fv -- &
+
+
+
+data τ ..{i : Size} ( fv : Nat) : Set where
+  var : Fin fv -> τ {i} fv
+  Π_Σ_ : ∀  {n m} .{j k : Size< i} ->  (Telescope fv  Lin (τ {j}) n)
+                      -> (Telescope (n + fv )  Lin (τ {k}) m) -> τ {j ⊔ˢ k} fv
+  ⊕ : ∀ {s} .{j : Size< i} -> Vec ((τ {j}) fv) s -> τ {i} fv -- ⊕ == \oplus
+  choice : ∀ {s} .{j : Size< i} -> Vec ((τ {j}) fv) s -> τ {i} fv -- &
 -- need to
+
+--- ,′ == ,\' or ,\prime
+desugarTypes : ∀ {fv } .{i} -> τS {i} fv -> τ {i} fv
+recurDesugar : ∀  {l } .{i }{fv  : Nat } {A : Set l} -> A × τS {i} fv  -> A × τ {i} fv
+recurDesugar (a , ts) = a , desugarTypes ts
+
+desugarTypes (var x) = var x
+desugarTypes (Π x Σ y ) = τ.Π_Σ_ (teleMap recurDesugar x)   (teleMap recurDesugar y) -- Π  x Σ y
+desugarTypes (⊕ x) = {!!} -- ⊕ x
+desugarTypes (⊗ x) = {!!}
+desugarTypes (choice x) = {!!}
+desugarTypes (par x) = {!!}
+
 
 --- core erased usage  types
 -- the 4 tuple operators should be definabled with just this :)
 -- after linearity / usage erasure
-data τF ( fv : ℕ) : Set where
+data τF ( fv : Nat) : Set where
   var : Fin fv -> τF fv
-  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τF n) -> (Telescope (n Nat.+ fv )  Lin τF m) -> τF fv
-  -- replace Lin with Unit
+  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Unit.⊤ τF n) -> (Telescope (n + fv )  Unit.⊤ τF m) -> τF fv
+  -- replace Lin with Unit (\top aka ⊤ )
 
 --
 --- for
