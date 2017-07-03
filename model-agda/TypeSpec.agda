@@ -142,13 +142,13 @@ decLinPO any1 any1 = yes reflLin
 
 infixr 5 _::_
 -- ⊔ == \lub
-data Telescope {i j} (fv : Nat ) ..{sz : Size} (A : Set j ) (F : .{ _ : Size } ->  Nat -> Set i )  : Nat → Set ( ( i ℓ.⊔ j  )) where
+data Telescope {i j} (fv : Nat ) (A : Set j ) (F : Nat -> Set i )  : Nat → Set ( ( i ℓ.⊔ j  )) where
   []  :  Telescope fv A  F  0
-  _::_ : ∀ { n : Nat } .{q : Size< sz } →  A ×  F { q} (fv + n) -> Telescope fv {q} A F n -> Telescope fv {sz} A F (Nat.suc n)
+  _::_ : ∀ { n : Nat } →  A ×  F (fv + n) -> Telescope fv A F n -> Telescope fv A F (Nat.suc n)
 
-tcons-inj-head : ∀ {i j } {fv : Nat} {A : Set j} .{s : Size } .{q : Size< s}  {F : .{ _ :  Size} -> Nat -> Set i}  {n}
-                 {x y : A ×  F { q} (fv + n)}
-                   {xs ys : Telescope fv {s} A  F n} → (x :: xs ) ≡ ( y :: ys ) → ((x ≡ y)  )
+tcons-inj-head : ∀ {i j } {fv : Nat} {A : Set j}  {F : Nat -> Set i}  {n}
+                 {x y : A ×  F (fv + n)}
+                   {xs ys : Telescope fv A  F n} → (x :: xs ) ≡ ( y :: ys ) → ((x ≡ y)  )
 tcons-inj-head refl = refl
 
 
@@ -158,22 +158,20 @@ tcons-inj-tail : ∀ {i j } {fv : Nat} {A : Set j} {F : Nat -> Set i}   {n}
 tcons-inj-tail refl = refl
 
 
-{-
 instance
-  EqTel : ∀  {a i} { A : Set a}  {{EqA : Eq A }} {fv : Nat } ..{q : Size} {F : .{_ : Size} -> Nat -> Set i} {{EqF : ∀ .{s:Size} {j : Nat} → Eq (F {q} (fv + j)) }} {n}  -> Eq (Telescope fv {q} A F n)
+  EqTel : ∀  {a i} { A : Set a}  {{EqA : Eq A }} {fv : Nat } {F : Nat -> Set i} {{EqF : ∀ {j : Nat} → Eq (F (fv + j)) }} {n}  -> Eq (Telescope fv A F n)
   _==_ {{EqTel}} [] [] = yes refl
   _==_ {{EqTel}} (x :: xs ) (y :: ys )  with x == y
   ... | no neq = no λ eq -> neq (tcons-inj-head eq)
   ... | yes eq  with xs == ys
   ...    | no neq = no λ eqT -> neq (tcons-inj-tail eqT)
   ...    | yes eqT  =  yes ( _::_ $≡ eq *≡ eqT) -- (Telescope._::_ Eq.$≡ eq *≡ eqT)
--}
 
-teleMap : ∀ {a b} {fv s : Nat } .{q : Size } {A : Set a} {B : Set a} {F : .{ _ : Size} -> Nat -> Set b} {G : .{ _ : Size} -> Nat -> Set b}
-            (f : ∀ .{j : Size } {i : Nat} -> A × F { j} (fv + i) -> B × G {  j} (fv + i ))
-            -> Telescope fv {q} A F   s -> Telescope fv { q} B G s
+
+teleMap : ∀ {a b} {fv s : Nat } {A : Set a} {B : Set a} {F : Nat -> Set b} {G : Nat -> Set b}
+            (f : ∀ {i : Nat} -> A × F (fv + i) -> B × G (fv + i ))-> Telescope fv A F s -> Telescope fv B G s
 teleMap f [] = []
-teleMap f (x :: xs) = f  x :: teleMap f xs -- f x :: teleMap f xs
+teleMap f (x :: xs) = f x :: teleMap f xs
 
 {-
 forall x , irr <= x
@@ -182,7 +180,13 @@ forall x , irr <= x
 
 -- ℕ == \bN
 -- sugared version of τS
-
+data τS ..{i : Size } ( fv : Nat ) : Set where
+  var : Fin fv -> τS fv
+  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τS n) -> (Telescope (n + fv )  Lin τS m) -> τS fv -- Π_Σ_ == \Pi_\Sigma_
+  ⊕ : ∀ {s} -> Vec (τS fv) s -> τS fv -- ⊕ == \oplus
+  ⊗ : ∀ {s} -> Telescope fv Lin τS s -> τS fv -- ⊗ == \otimes
+  choice : ∀ {s} -> Vec (τS fv) s -> τS fv -- & , often called 'with'
+  par : ∀ {s} -> Vec (τS fv) s -> τS fv -- \& == ⅋ is the other name
 {-
 We should like to SHOW that all of ⊗ ⊕ ⅋ and & are internalized by Π_Σ_ under CBN or CBV or something
 -- definitely dont need built in ⊗ or par/⅋
@@ -277,29 +281,23 @@ two different continuations / contexts, each receiving one of A and B
 
 
 
-data τS {ℓ } ( fv : Nat ) : ..{ i : Size } -> Set ℓ  where
-  var : {i : Size } -> Fin fv -> τS  fv {↑ i}
-  Π_Σ_ : ∀  {n m} .{j k : Size } ->  (Telescope fv {j}  Lin τS n) -> (Telescope (n + fv )  {k} Lin τS m) -> τS {↑ (j ⊔ˢ k)} fv -- Π_Σ_ == \Pi_\Sigma_
-  ⊕ : ∀ {s} {j : Size } -> Vec (τS {j} fv) s -> τS {↑ j} fv -- ⊕ == \oplus
-  ⊗ : ∀ {s} {j : Size} -> Telescope fv {j} Lin τS s -> τS {↑ j} fv -- ⊗ == \otimes
-  choice : ∀ {s} .{j : Size} -> Vec (τS {j} fv) s -> τS {↑ j } fv -- & , often called 'with'
-  par : ∀ {s} .{j : Size} -> Vec (τS {j} fv) s -> τS {↑ j } fv -- \& == ⅋ is the other name
+
 
 data τ ..{i : Size} ( fv : Nat) : Set where
   var : Fin fv -> τ {i} fv
   Π_Σ_ : ∀  {n m} .{j k : Size< i} ->  (Telescope fv  Lin (τ {j}) n)
-                      -> (Telescope (n + fv )  Lin (τ {k}) m) -> τ {i} fv
-  ⊕ : ∀ {s} .{j : Size< i} -> Vec ((τ {j}) fv) s -> τ { i} fv -- ⊕ == \oplus
-  choice : ∀ {s} .{j : Size< i} -> Vec ((τ {j}) fv) s -> τ { i} fv -- &
+                      -> (Telescope (n + fv )  Lin (τ {k}) m) -> τ {j ⊔ˢ k} fv
+  ⊕ : ∀ {s} .{j : Size< i} -> Vec ((τ {j}) fv) s -> τ {i} fv -- ⊕ == \oplus
+  choice : ∀ {s} .{j : Size< i} -> Vec ((τ {j}) fv) s -> τ {i} fv -- &
 -- need to
 
 --- ,′ == ,\' or ,\prime
-desugarTypes : ∀ {fv } .{i} .{j : Size< i} -> τS {j} fv -> τ {j} fv
-recurDesugar : ∀  {l } .{i } {fv  : Nat } {A : Set l} -> A × τS {i} fv  -> A × τ {i} fv
+desugarTypes : ∀ {fv } .{i} -> τS {i} fv -> τ {i} fv
+recurDesugar : ∀  {l } .{i }{fv  : Nat } {A : Set l} -> A × τS {i} fv  -> A × τ {i} fv
 recurDesugar (a , ts) = a , desugarTypes ts
 
 desugarTypes (var x) = var x
-desugarTypes (Π x Σ y ) =  {!!} -- τ.Π_Σ_ (teleMap recurDesugar x)   (teleMap recurDesugar y) -- Π  x Σ y
+desugarTypes (Π x Σ y ) = τ.Π_Σ_ (teleMap recurDesugar x)   (teleMap recurDesugar y) -- Π  x Σ y
 desugarTypes (⊕ x) = {!!} -- ⊕ x
 desugarTypes (⊗ x) = {!!}
 desugarTypes (choice x) = {!!}
