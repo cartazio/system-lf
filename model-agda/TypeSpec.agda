@@ -142,13 +142,13 @@ decLinPO any1 any1 = yes reflLin
 
 infixr 5 _::_
 -- ⊔ == \lub
-data Telescope {i j} (fv : Nat )  (A : Set j ) (F : .{ _ : Size } ->  Nat -> Set i )  : ..{sz : Size} →  Nat → Set ( ( i ℓ.⊔ j  )) where
-  []  : ∀ .{sz : Size} -> Telescope fv A  F  {sz} 0
-  _::_ : ∀ { n : Nat } .{ q s : Size } →  A ×  F { s} (fv + n) -> Telescope fv  A F {q} n -> Telescope fv  A F {↑ (q ⊔ˢ s)}  (Nat.suc n)
+data Telescope {i j} (fv : Nat ) ..{sz : Size} (A : Set j ) (F : .{ _ : Size } ->  Nat -> Set i )  : Nat → Set ( ( i ℓ.⊔ j  )) where
+  []  :  Telescope fv A  F  0
+  _::_ : ∀ { n : Nat } .{q : Size< sz } →  A ×  F { q} (fv + n) -> Telescope fv {q} A F n -> Telescope fv {sz} A F (Nat.suc n)
 
 tcons-inj-head : ∀ {i j } {fv : Nat} {A : Set j} .{s : Size } .{q : Size< s}  {F : .{ _ :  Size} -> Nat -> Set i}  {n}
                  {x y : A ×  F { q} (fv + n)}
-                   {xs ys : Telescope fv  A  F {s} n} → (x :: xs ) ≡ ( y :: ys ) → ((x ≡ y)  )
+                   {xs ys : Telescope fv {s} A  F n} → (x :: xs ) ≡ ( y :: ys ) → ((x ≡ y)  )
 tcons-inj-head refl = refl
 
 
@@ -169,8 +169,8 @@ instance
   ...    | yes eqT  =  yes ( _::_ $≡ eq *≡ eqT) -- (Telescope._::_ Eq.$≡ eq *≡ eqT)
 -}
 
-teleMap : ∀ {a b} {fv s : Nat } .{q : Size } {A : Set a} {B : Set a} {F : Nat -> .{ _ : Size} ->  Set b} {G :  Nat -> .{ _ : Size} -> Set b}
-            (f : ∀ .{j : Size } {i : Nat} -> A × F (fv + i) { j}  -> B × G (fv + i )  {  j})
+teleMap : ∀ {a b} {fv s : Nat } .{q : Size } {A : Set a} {B : Set a} {F : .{ _ : Size} -> Nat -> Set b} {G : .{ _ : Size} -> Nat -> Set b}
+            (f : ∀ .{j : Size } {i : Nat} -> A × F { j} (fv + i) -> B × G {  j} (fv + i ))
             -> Telescope fv {q} A F   s -> Telescope fv { q} B G s
 teleMap f [] = []
 teleMap f (x :: xs) = f  x :: teleMap f xs -- f x :: teleMap f xs
