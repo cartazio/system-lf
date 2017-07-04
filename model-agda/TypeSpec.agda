@@ -1,37 +1,13 @@
-{-# OPTIONS --experimental-irrelevance #-}
+
 
 module TypeSpec where
 
-open import Data.Fin
-open import Function
-open import Data.Unit
-open import Data.Star as Star
-open import Relation.Nullary as Decidable
-open import Data.Nat as Nat
-open import Data.Vec as Vec
-open import Level as ℓ -- \ell
-import Data.Unit as Unit
-open import Data.Bool as B  --
-open import Relation.Binary as RB
-open import Data.Product
-open import Relation.Binary.PropositionalEquality
-open import Agda.Builtin.Size
 
-Nat = ℕ
 
-{-
-open import Prelude.Nat as Nat
-open import Prelude.Fin
-open import Prelude.Decidable as Decidable
-open import Prelude.Equality as Eq
-open import Agda.Primitive as ℓ
-open import Prelude.Semiring renaming ( one to semi1)
-open import Prelude.Vec
-open import Prelude.Unit as Unit
-open import Prelude.Product
-open import Prelude.Functor
-open import Agda.Builtin.Size
--}
+open import FormalUtils
+
+
+open import Telescope
 
 {-
 one approach
@@ -145,34 +121,6 @@ decLinPO any1 any1 = yes reflLin
 
 
 
-infixr 5 _::_
--- ⊔ == \lub
-data Telescope  (fv : Nat ) (A : Set  ) (F : Nat -> Set  )  : Nat → Set  where
-  []  :  Telescope fv A  F  0
-  _::_ : ∀ { n : Nat } →  A × F (fv Nat.+ n) -> Telescope fv A F n -> Telescope fv A F (Nat.suc n)
-
-tcons-inj-head : ∀ {fv : Nat} {A : Set }  {F : Nat -> Set}  {n}
-                 {x y : A ×  F (fv Nat.+ n)}
-                   {xs ys : Telescope fv A  F n} → (x :: xs ) ≡ ( y :: ys ) → ((x ≡ y)  )
-tcons-inj-head refl = refl
-
-
-tcons-inj-tail : ∀  {fv : Nat} {A : Set } {F : Nat -> Set }   {n}
-                 {x y : A ×  F (fv Nat.+ n)}
-                   {xs ys : Telescope fv A  F n} →(x :: xs ) ≡ ( y :: ys ) → xs ≡ ys
-tcons-inj-tail refl = refl
-
-{-
-instance
-  EqTel : ∀  { A : Set }  {{EqA : Eq A }} {fv : Nat } {F : Nat -> Set } {{EqF : ∀ {j : Nat} → Eq (F (fv + j)) }} {n}  -> Eq (Telescope fv A F n)
-  _==_ {{EqTel}} [] [] = yes refl
-  _==_ {{EqTel}} (x :: xs ) (y :: ys )  with x == y
-  ... | no neq = no λ eq -> neq (tcons-inj-head eq)
-  ... | yes eq  with xs == ys
-  ...    | no neq = no λ eqT -> neq (tcons-inj-tail eqT)
-  ...    | yes eqT  =  yes ( _::_ $≡ eq *≡ eqT) -- (Telescope._::_ Eq.$≡ eq *≡ eqT)
--}
-
 
 
 {-
@@ -279,7 +227,7 @@ two different continuations / contexts, each receiving one of A and B
 
 data τS   ( fv : Nat ) : {- Nat -> -}   Set  where
   var : Fin fv -> τS fv -- 0
-  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τS n) -> (Telescope (n Nat.+ fv )  Lin τS m) -> τS fv -- Π_Σ_ == \Pi_\Sigma_
+  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τS n) -> (Telescope (n + fv )  Lin τS m) -> τS fv -- Π_Σ_ == \Pi_\Sigma_
   ⊕ : ∀ {s} -> Vec (τS fv) s -> τS fv -- ⊕ == \oplus
   ⊗ : ∀ {s} -> Telescope fv Lin τS s -> τS fv -- ⊗ == \otimes
   choice : ∀ {s} -> Vec (τS fv) s -> τS fv -- & , often called 'with'
@@ -287,7 +235,7 @@ data τS   ( fv : Nat ) : {- Nat -> -}   Set  where
 
 data τ  ( fv : Nat) : {-  Nat -> -}  Set  where
   var : Fin fv -> τ  fv -- 0
-  Π_Σ_ : ∀  {n m} ->  Telescope fv  Lin τ  n -> Telescope (n Nat.+ fv )  Lin τ m  -> τ  fv
+  Π_Σ_ : ∀  {n m} ->  Telescope fv  Lin τ  n -> Telescope (n + fv )  Lin τ m  -> τ  fv
   ⊕ : ∀ {s}  -> Vec  (τ  fv) s -> τ  fv -- ⊕ == \oplus
   choice : ∀ {s}  -> Vec (τ  fv) s -> τ  fv -- &
 -- need to
@@ -301,7 +249,7 @@ desugarTypes ts = {!!}
 -- after linearity / usage erasure
 data τF ( fv : Nat) : Set where
   var : Fin fv -> τF fv
-  Π_Σ_ : ∀  {n m} ->  (Telescope fv  Unit.⊤ τF n) -> (Telescope (n Nat.+ fv )  Unit.⊤ τF m) -> τF fv
+  Π_Σ_ : ∀  {n m} ->  (Telescope fv  ⊤ τF n) -> (Telescope (n + fv )  ⊤ τF m) -> τF fv
   -- replace Lin with Unit (\top aka ⊤ )
 
 --
