@@ -219,7 +219,7 @@ two different continuations / contexts, each receiving one of A and B
 
 -- forgot linearity annotations on ⊗ ⊕ choice and par
 
--- telescoped system f
+-- full linear logic
 data τS   ( fv : Nat ) : {- Nat -> -}   Set  where
   var : Fin fv -> τS fv -- 0
   Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τS n) -> (Telescope (n + fv )  Lin τS m) -> τS fv -- Π_Σ_ == \Pi_\Sigma_
@@ -229,7 +229,7 @@ data τS   ( fv : Nat ) : {- Nat -> -}   Set  where
   par : ∀ {s} -> Vec (τS fv) s -> τS fv -- \& == ⅋ is the other name
   ¬ : ∀ {s} -> Telescope fv Lin τS s -> τS fv
 
--- minimal linear logic still giving all connectives
+-- minimal linear logic still giving all connectives (via negation or encodings)
 data τ  ( fv : Nat) : {-  Nat -> -}  Set  where
   var : Fin fv -> τ  fv -- 0
   Π_Σ_ : ∀  {n m} ->  Telescope fv  Lin τ  n -> Telescope (n + fv )  Lin τ m  -> τ  fv
@@ -255,7 +255,7 @@ desugarTypes (choice x) = {!¬ ()!}
 desugarTypes (par x) = {!!}
 desugarTypes (¬ x) = {!!}
 
---- core erased usage types
+--- core erased usage types -- system F with telescopes
 -- the 4 tuple operators should be definabled with just this :)
 -- after linearity / usage erasure
 data τF ( fv : Nat) : Set where
