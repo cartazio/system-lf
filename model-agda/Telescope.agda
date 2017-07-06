@@ -2,12 +2,10 @@ module TelescopeList where
 
 open import FormalUtils
 
-
-
-
 infixl 5 _::_
+
 -- ⊔ == \lub
-data Telescope  (fv : Nat ) (A : Set  ) (F : Nat -> Set  )  : Nat → Set  where
+data Telescope  (fv : Nat) (A : Set) (F : Nat -> Set) : Nat → Set  where
   []  :  Telescope fv A  F  0
   _::_ : ∀ { n : Nat } → Telescope fv A F n -> A × F (fv + n) ->  Telescope fv A F (Nat.suc n)
 

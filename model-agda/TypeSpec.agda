@@ -1,17 +1,11 @@
-
-
 module TypeSpec where
 
-
-
 open import FormalUtils
-
-
 open import TelescopeList
 
 {-
 one approach
-irrlevant == {}
+irrelevant == {}
 atmost 1 == {≤1}  ==? { ==1, <1 }
 exactly1 == { =1 }
 atleast 1 == { ≥1  } ==? { ==1, >1}
@@ -24,9 +18,8 @@ instead of rig on symbols, have rig on sets? (would negation be complementation?
 * == intersection
 
 lets take this model and name all our "subsets"
-
-
 -}
+
 data Lin : Set where -- linearity lattice, name not stable :)
   irr : Lin -- {} or { <1} , think irr == <1 , AKA zero or 0 or ∅
   <=1 : Lin -- {<1, ==1}
@@ -137,23 +130,23 @@ We should like to SHOW that all of ⊗ ⊕ ⅋ and & are internalized by Π_Σ_ 
 
 note:
 for f ∈ ⊗,⊕,⅋,&
-the following should be "equivalences/definitially true"
+the following should be "equivalences/definitionally true"
 1 = ⊗[],
 ⊤ = &[],
 ⊥ = ⅋[],
 0 = ⊕[]
 "units/true/false"
 
-likewise, for f,h ∈ (⊗,&), (⊕,⅋)
-¬ f ( a) ( b) == h  ( ¬ a) (¬ )
+likewise, for (f , h) ∈ { (⊗,&), (⊕,⅋) }
+¬ f a b == h (¬ a) (¬ b)
 
 the classical laws (including double negation elim)
 ¬ ¬ a = a  -- an involution! often written (_)^{⊥}
 -- one way to think about negation is you switch the side of the turnstyle ⊢
-¬ (a ⊗ b)= ¬ a ⅋ ¬ b
+¬ (a ⊗ b) = ¬ a ⅋ ¬ b
 ¬ (a ⊕ b) = ¬ a & ¬ b
 ¬ (a & b) = ¬ a ⊕ ¬ b
-¬ (a ⅋ b) = ¬ a ⊗ ¬ b --- this one leads to (a⅋b) == ¬ (¬ a ⊗ ¬ b), which  is interesting :)
+¬ (a ⅋ b) = ¬ a ⊗ ¬ b --- this one leads to (a⅋b) == ¬ (¬ a ⊗ ¬ b), which is interesting :)
 ¬ 1 = ⊥
 ¬ 0 = ⊤
 ¬ ⊥ = 1
@@ -164,6 +157,7 @@ and if included they obey
 ¬(!a)= ?(¬ a)
 ¬(?a)= !(¬ a)
 -}
+
 {-
 for ⊸
  to input : type "\r-o" or "\r" or "\multimap" or "\-o" with Agda input method
@@ -171,16 +165,16 @@ and for ×ₖ write \_k for letter or number k
 -}
 
 {-
-how to thinkabout a ⅋ b :
-a⅋b == ¬ ¬ (a ⅋ b )
+how to think about a ⅋ b :
+a ⅋ b == ¬ ¬ (a ⅋ b)
 (via double negation elim)
-¬ ¬ (a ⅋ b ) == ¬ (¬ a ⊗ ¬ b)
-(via duality of negation )
+¬ ¬ (a ⅋ b) == ¬ (¬ a ⊗ ¬ b)
+(via duality of negation)
 
 then if we desugar ¬ a == a ⊸ ∀ x . x
-or as ¬ a = ∀ x , a ⊸ x
+or as ¬ a = ∀ x . a ⊸ x
 then we can read
- ¬ (¬ a ⊗ ¬ b) == ∀ x₁ , ((∀ x₂ . a ⊸ x₂) ⊗ (∀ x₃ . a ⊸ x₃ ) ⊸ x₁
+ ¬ (¬ a ⊗ ¬ b) == ∀ x₁ . ((∀ x₂ . a ⊸ x₂) ⊗ (∀ x₃ . a ⊸ x₃ ) ⊸ x₁
 
 I then claim that
 A⅋B ⇒ (or perhaps ≥ or even ≡ !! )
@@ -225,6 +219,7 @@ two different continuations / contexts, each receiving one of A and B
 
 -- forgot linearity annotations on ⊗ ⊕ choice and par
 
+-- telescoped system f
 data τS   ( fv : Nat ) : {- Nat -> -}   Set  where
   var : Fin fv -> τS fv -- 0
   Π_Σ_ : ∀  {n m} ->  (Telescope fv  Lin τS n) -> (Telescope (n + fv )  Lin τS m) -> τS fv -- Π_Σ_ == \Pi_\Sigma_
@@ -234,13 +229,13 @@ data τS   ( fv : Nat ) : {- Nat -> -}   Set  where
   par : ∀ {s} -> Vec (τS fv) s -> τS fv -- \& == ⅋ is the other name
   ¬ : ∀ {s} -> Telescope fv Lin τS s -> τS fv
 
+-- minimal linear logic still giving all connectives
 data τ  ( fv : Nat) : {-  Nat -> -}  Set  where
   var : Fin fv -> τ  fv -- 0
   Π_Σ_ : ∀  {n m} ->  Telescope fv  Lin τ  n -> Telescope (n + fv )  Lin τ m  -> τ  fv
   ⊕ : ∀ {s}  -> Vec  (τ  fv) s -> τ  fv -- ⊕ == \oplus
   choice : ∀ {s}  -> Vec (τ  fv) s -> τ  fv -- &
   ¬ : ∀ {s} -> Telescope fv Lin τ s -> τ fv
--- need to
 
 --- ,′ == ,\' or ,\prime
 desugarTypes : ∀ {fv }  -> τS  fv -> τ  fv
@@ -260,13 +255,16 @@ desugarTypes (choice x) = {!¬ ()!}
 desugarTypes (par x) = {!!}
 desugarTypes (¬ x) = {!!}
 
---- core erased usage  types
+--- core erased usage types
 -- the 4 tuple operators should be definabled with just this :)
 -- after linearity / usage erasure
 data τF ( fv : Nat) : Set where
   var : Fin fv -> τF fv
   Π_Σ_ : ∀  {n m} ->  (Telescope fv  ⊤ τF n) -> (Telescope (n + fv )  ⊤ τF m) -> τF fv
   -- replace Lin with Unit (\top aka ⊤ )
+
+eraseTypes : ∀ {fv} -> τ fv -> τF fv
+eraseTypes = {!!}
 
 --
 --- for
