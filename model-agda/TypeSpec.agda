@@ -7,7 +7,7 @@ module TypeSpec where
 open import FormalUtils
 
 
-open import Telescope
+open import TelescopeList
 
 {-
 one approach
@@ -232,17 +232,33 @@ data τS   ( fv : Nat ) : {- Nat -> -}   Set  where
   ⊗ : ∀ {s} -> Telescope fv Lin τS s -> τS fv -- ⊗ == \otimes
   choice : ∀ {s} -> Vec (τS fv) s -> τS fv -- & , often called 'with'
   par : ∀ {s} -> Vec (τS fv) s -> τS fv -- \& == ⅋ is the other name
+  ¬ : ∀ {s} -> Telescope fv Lin τS s -> τS fv
 
 data τ  ( fv : Nat) : {-  Nat -> -}  Set  where
   var : Fin fv -> τ  fv -- 0
   Π_Σ_ : ∀  {n m} ->  Telescope fv  Lin τ  n -> Telescope (n + fv )  Lin τ m  -> τ  fv
   ⊕ : ∀ {s}  -> Vec  (τ  fv) s -> τ  fv -- ⊕ == \oplus
   choice : ∀ {s}  -> Vec (τ  fv) s -> τ  fv -- &
+  ¬ : ∀ {s} -> Telescope fv Lin τ s -> τ fv
 -- need to
 
 --- ,′ == ,\' or ,\prime
 desugarTypes : ∀ {fv }  -> τS  fv -> τ  fv
-desugarTypes ts = {!!}
+{-# TERMINATING #-} -- this is evil, but whatever, this code is terminating
+--- should try to understand whats wrong / work out the sized formulation later
+-- last
+desugarTypes (var x) = var x
+desugarTypes (Π x Σ y) = τ.Π_Σ_ ( teleMap (λ z → z) desugarTypes x) (teleMap (λ z → z) desugarTypes y)
+desugarTypes (⊕ x) = τ.⊕ (flip-fmap  x desugarTypes )
+desugarTypes (⊗  x) =  τ.¬ ( [] :: ( one , (τ.¬ ( teleMap (λ z → z) desugarTypes x)  ) ) )
+-- ISSUE --- do we need to know the contextual linearity or is one correct
+--- seems to be correctl for one,zero >=1, <=1, any
+                 -- if telemap carries indices as fv + n, would need subst and nat commutivity /
+                 -- zero law to get this to type check
+--{s} ( [] :: ( one  , τ.¬ {s} (teleMap  (λ x -> x)  desugarTypes x ) ) )
+desugarTypes (choice x) = {!¬ ()!}
+desugarTypes (par x) = {!!}
+desugarTypes (¬ x) = {!!}
 
 --- core erased usage  types
 -- the 4 tuple operators should be definabled with just this :)
