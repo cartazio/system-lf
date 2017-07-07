@@ -219,6 +219,19 @@ two different continuations / contexts, each receiving one of A and B
 
 -- forgot linearity annotations on ⊗ ⊕ choice and par
 
+{-
+FIX THIS: for non dependent formulation,
+need to distinguish between telescope terms that are values with types, vs
+types that have kinds,
+only types are telescoping in that simpler setting,
+can eg just do a type level rev list  of
+data Sorts : Set where
+  Kind : Sorts
+  Type : Sorts
+-- this will keep things from feeling out of sorts ;)
+
+-}
+
 -- full linear logic
 data τS   ( fv : Nat ) : {- Nat -> -}   Set  where
   var : Fin fv -> τS fv -- 0
