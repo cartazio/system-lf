@@ -19,8 +19,17 @@ data TypeF (fv : Nat ) : Set where
      vτ : Fin fv -> TypeF fv
      ∀τ  : TypeF (1 + fv) -> TypeF  fv
      _→τ_ : TypeF fv -> TypeF fv -> TypeF fv -- dependent types put a wrench in this ;)
+
+{-
+will probably need to add a type context stack to these :)
+-}
 data TmF (fv : Nat) {tfv : Nat} : TypeF tfv -> Set where
     τAbs : ∀ {τ} ->
       TmF fv { 1 + tfv } τ  ->
-      -----------------------------------
+      -------------------------
       TmF fv  { tfv }  (∀τ τ)
+    λAbs : ∀ τdom {τcodom} ->
+        -- Church style lambda for now, τdom is explicit
+      TmF (1 + fv) {tfv} τcodom ->
+      ----------------------------
+      TmF fv {tfv} (τdom →τ τcodom)

@@ -1,30 +1,33 @@
-module TelescopeList where
+module Telescope where
 
 open import FormalUtils
 
+
+
+
 infixl 5 _::_
-
 -- ⊔ == \lub
-data Telescope  (fv : Nat) (A : Set) (F : Nat -> Set) : Nat → Set  where
+data Telescope  (fv : Nat ) (A : Set  ) (F : Nat -> Set  )  : Nat → Set  where
   []  :  Telescope fv A  F  0
-  _::_ : ∀ { n : Nat } → Telescope fv A F n -> A × F (fv + n) ->  Telescope fv A F (Nat.suc n)
+  _::_ : ∀ { n : Nat } → Telescope fv A F n -> A × F (n + fv ) ->  Telescope fv A F (Nat.suc n)
 
--- open import Telescope using ( [] ; _::_ )
 
-tcons-inj-head : ∀ {fv : Nat} {A : Set }  {F : Nat -> Set}  {n}  {x y : A ×  F (fv + n)} {xs ys : Telescope fv A  F n}
+open Telescope using ( [] ; _::_ )
+
+tcons-inj-head : ∀ {fv : Nat} {A : Set }  {F : Nat -> Set}  {n}  {x y : A ×  F ( n + fv )} {xs ys : Telescope fv A  F n}
                    → (xs :: x ) ≡ ( ys :: y ) → ((x ≡ y)  )
 tcons-inj-head refl = refl
 
 
 tcons-inj-tail : ∀  {fv : Nat} {A : Set } {F : Nat -> Set }   {n}
-                 {x y : A ×  F (fv + n)}
+                 {x y : A ×  F (n + fv )}
                    {xs ys : Telescope fv A  F n} →(xs :: x ) ≡ ( ys :: y ) → xs ≡ ys
 tcons-inj-tail refl = refl
 
 
 teleMap :  ∀ {F G} {A B} {fv} {s} -> (A -> B) -> (∀ {i} -> F i -> G i)  -> Telescope fv A F s ->  Telescope fv B G s
 teleMap a2b f2g [] = []
-teleMap a2b f2g (teleA :: (1stA  , 2ndF)) = {!teleMap a2b f2g teleA :: (a2b 1stA , f2g 2ndF)!}
+teleMap a2b f2g (teleA :: (1stA  , 2ndF)) = teleMap a2b f2g teleA :: (a2b 1stA , f2g 2ndF)
 
 {-
 instance

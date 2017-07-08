@@ -1,7 +1,7 @@
 module TypeSpec where
 
 open import FormalUtils
-open import TelescopeList
+open import Telescope
 
 {-
 one approach
@@ -266,7 +266,7 @@ desugarTypes (⊗  x) =  τ.¬ ( [] :: ( one , (τ.¬ ( teleMap (λ z → z) des
                  -- if telemap carries indices as fv + n, would need subst and nat commutivity /
                  -- zero law to get this to type check
 --{s} ( [] :: ( one  , τ.¬ {s} (teleMap  (λ x -> x)  desugarTypes x ) ) )
-desugarTypes (choice x) = choice (fmap   ( λ  y  ->  fst {! !} , desugarTypes (snd y)  ) x)
+desugarTypes (choice x) = choice (fmap   ( λ  y  ->  fst y  , desugarTypes (snd y)  ) x)
 desugarTypes (par x) = {!!}  -- ¬ ( (λ y → (¬ ( [] :: (one , desugarTypes y)) ))  x )
 desugarTypes (¬ x) = ¬ (teleMap (λ z → z) desugarTypes x)
 
