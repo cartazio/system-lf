@@ -1,1 +1,8 @@
 .#*.agda
+*.agdai
+model-hs-system-lf/dist-newstyle
+notes+expositions+presentations/2017_HIW_GHC_Core_Linear_Logic_Friends/latex/2017hiwslides.fls
+notes+expositions+presentations/2017_HIW_GHC_Core_Linear_Logic_Friends/latex/2017hiwslides.nav
+notes+expositions+presentations/2017_HIW_GHC_Core_Linear_Logic_Friends/latex/2017hiwslides.pdf
+notes+expositions+presentations/2017_HIW_GHC_Core_Linear_Logic_Friends/latex/2017hiwslides.snm
+*.lean#
