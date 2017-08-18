@@ -6,3 +6,6 @@ notes+expositions+presentations/2017_HIW_GHC_Core_Linear_Logic_Friends/latex/201
 notes+expositions+presentations/2017_HIW_GHC_Core_Linear_Logic_Friends/latex/2017hiwslides.pdf
 notes+expositions+presentations/2017_HIW_GHC_Core_Linear_Logic_Friends/latex/2017hiwslides.snm
 *.lean#
+*.pygtex
+2017hiwslides.vrb
+*.pygstyle

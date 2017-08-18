@@ -50,8 +50,8 @@
 %\usepackage{mathptmx}
 %\usepackage[charter]{mathdesign}
 
-\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
-\pagestyle{fancy} % options: empty , plain , fancy
+% \usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+% \pagestyle{fancy} % options: empty , plain , fancy
 % be sure to give short title version
 
 % \renewcommand{\headrulewidth}{0pt} % customise the layout...
@@ -98,6 +98,8 @@
  \shortdayofweekname{\THEDAY}{\THEMONTH}{\THEYEAR}\ at  \currenttime}
 \newcommand{\now}{\fullisodate
   \today  \usdate}
+
+\usepackage{minted}
 
 %labelling aids
 \newcommand{\PropositionName}[1]{\label{prop:#1}}
@@ -182,7 +184,36 @@
 \date{created: 2017-08-16\\ presented 2017-09-19 \\ last generated \now}
 
 \maketitle
-\begin{frame}
+\begin{frame}[fragile]
+Consider this innocent program, \ldots are we cartesian closed or merely (symmetric) braided monoidal?
+% this should be 2-3 slides in after 1-2 terms/ideas some intro stuff
+% \begin{onlyenv}<1>
+\begin{minted}{haskell}
+module BadUncurry where
+import Control.Exception
+data Fst a = Only a ; deriving (Show,Typeable,Exception)
+badFst :: (Typeable a, Show a) => a -> b -> a
+badFst a = throw (Only a)
+notOnly (Only a) = a
+nonLinear :: (Show a,Typeable a ) => (a,b) -> IO a
+nonLinear pr =
+    catch
+      (return  (uncurry badFst pr))
+      (return . notOnly)
+
+\end{minted}
+
+% \end{onlyenv}
+\end{frame}
+
+
+\begin{frame}[fragile]
+what next? What if we replaced our definition of uncurry?
+\begin{minted}{haskell}
+linearUncurry :: (a,b) -> ((# a , b #) -> c) -> c
+\end{minted}
+this version of uncurry doesn't allow an exceptional definition of first!
 
 \end{frame}
+
 \end{document}
