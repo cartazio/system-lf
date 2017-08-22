@@ -281,6 +281,30 @@ data τF ( fv : Nat) : Set where
 eraseTypes : ∀ {fv} -> τ fv -> τF fv
 eraseTypes = {!!}
 
+
+{-
+⊕[a_1 ... a_n]== n-ary sum / disjoint union
+⊕[] == VOID / Absurd / Bottom
+
+
+⅋[a_1 ... a_n ]   == cps version of fork io  for n-ary fork
+⅋[] == close thread with all resources finalized
+
+cps into direc style we have
+⅋[a1 .. an] == ¬ (⊗[¬ a1 ... ¬ an]) == ⊗[a_1 -> ∅ ... a_n → ∅ ]
+⅋[] ==  ...
+
+&[a_1 ... a_n] === cps of RHS in case X of RHS
+&[] === RHS of case (x : Void) of RHS
+
+case (x : ⊕[ x_i .. ])  of  &[ x_i ]
+
+empty ⅋ and ⊗ pair up to be "close thread cleanly"
+
+empty & and ⊕ pair up to "abort program from the absurd"  (at least our current semantics / thinking)
+
+-}
+
 --
 --- for
 
