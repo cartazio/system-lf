@@ -309,7 +309,40 @@ empty & and ⊕ pair up to "abort program from the absurd"  (at least our curren
 --- for
 
 
+{-
 
+lets  have Γ|g =  the set of variables where their usage level ℓ == g (without "subtyping" using ⊓  or ⊔ on the lattice)  (ie Γ|1 == all the bindings that can be used linearly )
+
+fuzzy rules from classical linear logic
+& intro rule (Right sequent rule)
+& is called With / or i call Choice
+
+ Γ ⊢ x₁ : A₁ … Γ ⊢ xₙ : Aₙ
+------------------- & intro (direct style ). notice how Γ is shared
+ Γ ⊢ t : &[A₁, … , Aₙ]
+
+no assumptions
+----------------
+Γ ⊢ &Unit : &[]
+
+
+--- this ignores >=1 and <=1 stuff... lalala, not quite right
+Φ = Φ₁ ∐  … Φₙ ,
+Φ ==  Γ|1,
+Ω=Γ/Φ,
+Ω,Φ₁ ⊢ e₁ : A₁ …  Ω,Φₙ ⊢ eₙ : Aₙ
+-------------------------------- PAR aka ⅋  in direct style intro rule, think of each eᵢ as having type ¬ ¬ Aᵢ
+Γ ⊢ t : ⅋[A₁, … ]
+
+
+⅋Unit rule
+Γ | 1  == ∅
+-----------------------
+Γ ⊢ ⅋Unit : ⅋[]
+
+
+
+-}
 -- \vdash == ⊢
 -- τ == \ tau
 -- data WFτ
