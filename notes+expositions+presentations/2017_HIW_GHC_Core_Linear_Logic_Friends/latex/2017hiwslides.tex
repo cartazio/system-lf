@@ -228,4 +228,47 @@ linearUncurry :: (a,b) -> ((# a , b #) -> c) -> c
 this version of uncurry doesn't allow an exceptional definition of first!
 \end{frame}
 
+\begin{frame}
+  \frametitle{Demand Analysis}
+  What's the relationship to demand analysis?
+\end{frame}
+
+\begin{frame}
+  \frametitle{Demand Analysis}
+  Demand analysis has more possible demands:
+
+  {\large Strictness demands}
+  \begin{itemize}
+    \item B: hyperstrict
+    \item L: lazy
+    \item S: head strict
+    \item S(s1 ... sn): structured product demand
+    \item C(s): call demand
+  \end{itemize}
+
+  {\large Absence / usage demands}
+  \begin{itemize}
+    \item A: unused
+    \item U: used on some execution path
+    \item H: head-used (value used but components are ignored)
+    \item U(u1 ... un): structured usage demand
+    \item C(u): call-demand
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Demand Analysis}
+  We end up with demands like \tt{<S,U><S,U(UA)>m}.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Demand Analysis}
+  But the details aren't important
+\end{frame}
+
+\begin{frame}
+  \frametitle{Demand Analysis}
+  Perhaps the main difference is that demand analysis is focused on \emph{inferring} usage without annotations, while a linear core would have checked annotations.
+\end{frame}
+
 \end{document}
