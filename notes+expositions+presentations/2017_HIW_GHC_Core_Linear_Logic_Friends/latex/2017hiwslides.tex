@@ -60,7 +60,7 @@
 
 
 
-%\usepackage[pdftex]{graphicx}
+\usepackage[pdftex]{graphicx}
 %\usepackage[usenames,dvipsnames]{color}
 %\usepackage{tikz}
 % \usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,positioning,fit,matrix,calc}
@@ -186,8 +186,62 @@
 \maketitle
 
 \begin{frame}
-  \frametitle{Introduction}
-  Who we are / what we do
+  \frametitle{Introduction - Authors}
+
+\begin{centering}
+\begin{tabular}{l|r}
+Joel & Carter  \\
+  \includegraphics[scale=0.06]{../joelpics/joel.jpg}   &
+  \includegraphics[scale=0.22]{../joelpics/IMG_4133.png}
+\end{tabular}
+
+\end{centering}
+
+\end{frame}
+
+
+
+\begin{frame}[t]\frametitle{title}
+
+
+
+\end{frame}
+
+% what is linear logic (high level)
+
+% heres an example (cake or gum)
+
+% linear logic for  haskellers
+
+% how linear logic ideas intersect with design activity in ghc / ghc core
+
+
+
+
+\begin{frame}[fragile]
+
+\frametitle{Whats a Loan?}
+\begin{minted}{haskell}
+
+
+import Control.STM.TQueue
+import Control.STM.TVar
+data OfferLoan a =  OLoan
+  {principal :: Chocolate
+  ,paymentMailbox :: TQueue  BubbleGum }
+-- chocolate for gum later
+data Debt where
+  Debt :: TQueue BubbleGum -> Debt
+takeLoan :: String ->  -- name of loan
+    TVar (Map String Debt) -> -- my wallet!
+    OfferLoan Candy ->  -- a loan
+    STM (Either (OfferLoan Candy) ())
+    -- left reject, right accept
+
+
+\end{minted}
+
+
 \end{frame}
 
 \begin{frame}
