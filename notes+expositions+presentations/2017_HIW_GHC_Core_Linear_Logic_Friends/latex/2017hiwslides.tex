@@ -204,6 +204,7 @@ Joel & Carter  \\
   \item And our particular approach is around developing a functional model
   of linear logic, applying the compiler engineering knowledge ghc and related
   systems embody, and our work is about building a programming language
+  that prevents errors in ownership descriptions.
 \end{enumerate}
 
 \end{frame}
@@ -215,7 +216,8 @@ Joel & Carter  \\
     \item Show how catchable pure exceptions break type safety/soundness of linearity.
     \item Explain the 6 different type formers of classical linear logic in terms of
     their functional haskell analogues.
-    \item
+    \item Show how some of these type formers tie into current work and design directions
+    of ghc!
   \end{enumerate}
 \end{frame}
 
@@ -270,7 +272,7 @@ takeLoan :: String ->  -- name of loan
 Alice and Bob both owe me some bubblegum. Rick (who's very risk averse) will happily pay me
 for the first 10 pieces of gum I receive, and his friend Morty (always taking risks) will
 also pay me for any gum after the first 10! In some circles, this sort of rearrangement
-is called a \emph{Sequential Tranche}. Sounds like a great job of Concurrency!
+is called a \emph{Sequential Tranche}. Sounds like a great job for Concurrency!
 
 
 So lets figure out how to recompose the OutQueues from Alice and Bob into new
