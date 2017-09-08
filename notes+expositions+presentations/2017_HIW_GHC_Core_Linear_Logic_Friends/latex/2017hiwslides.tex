@@ -242,28 +242,25 @@ Our opinions are our own. etc etc :)
 
 
 \begin{frame}[fragile]
-\frametitle{Whats a Loan?}
+\frametitle{What \emph{is} a Loan?}
+
 \begin{minted}{haskell}
+import Control.Concurrent.STM.TQueue
+import Control.Concurrent.STM.TVar
+newtype InQ  a = InQ  (TQueue a)
+newtype OutQ a = OutQ (TQueue a)
 
+data Loan a = Loan
+  { principal :: Chocolate
+  , repay     :: InQ BubbleGum }
 
-import Control.STM.TQueue
-import Control.STM.TVar
-newtype InQueue a = IQ (TQueue a)
-newtype OutQueue a = OQ  (TQueue a)
-data OfferLoan a =  OLoan
-  {principal :: Chocolate
-  ,repay :: TQueue  BubbleGum }
-   --- this is the input side of the queue
+data Debt = Debt (OutQ BubbleGum)
 
--- chocolate for gum later
-data Debt where
-  Debt :: TQueue BubbleGum -> Debt
-takeLoan :: String ->  -- name of loan
-    TVar (Map String Debt) -> -- my wallet!
-    OfferLoan Candy ->  -- a loan
-    STM (Either (OfferLoan Candy) ())
-    -- left reject, right accept
+type LoanId = String
+takeLoan :: LoanId -> Loan -> TVar (Map LoanId Debt) -- my wallet
+         -> STM (Either (Loan Candy) ()) -- ether reject or accept
 \end{minted}
+% FIXME what does takeLoan do?
 \end{frame}
 
 % measured monoids sound nice for aggregating payments
