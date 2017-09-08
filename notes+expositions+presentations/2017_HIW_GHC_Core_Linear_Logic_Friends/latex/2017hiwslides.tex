@@ -376,7 +376,7 @@ These strategies all seem like an ill fit for GHC today.
 The big  6 type operators in linear logic are:
 
 \begin{tabular}{c|r|c|l}
-Linear & Haskell & CPS (\neg \neg) & Name \\
+Linear & Haskell & HS CPS (\neg \neg) & Name \\
 \hline
 \( \neg X \) & \( \neg X \) \emph{or} \( X \rightarrow \forall a.a  \) &  same   &  negation \\
 \( A \otimes B \) & \( (A,B) \) &  & tensor or product \\
@@ -428,7 +428,8 @@ join point representation.
 
 Demand analysis and the usage info on every binding \emph{IS} a very interesting
 fancy linear type system! It just lives in a different place than the rest of the
-types... and are only used by the optimizer!
+types... and are only used by the optimizer! It has ideas like \( \geq1 \) and \( \leq 1 \)
+to name but the simplest two!
 
 linearity / usage here roughly means ``entered the closure'', which is stronger
 than some other notions that seem to be used.
