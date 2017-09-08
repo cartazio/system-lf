@@ -226,9 +226,13 @@ Joel & Carter  \\
 
 import Control.STM.TQueue
 import Control.STM.TVar
+newtype InQueue a = IQ (TQueue a)
+newtype OutQueue a = OQ  (TQueue a)
 data OfferLoan a =  OLoan
   {principal :: Chocolate
   ,paymentMailbox :: TQueue  BubbleGum }
+   --- this is the input side of the queue
+
 -- chocolate for gum later
 data Debt where
   Debt :: TQueue BubbleGum -> Debt
@@ -237,9 +241,52 @@ takeLoan :: String ->  -- name of loan
     OfferLoan Candy ->  -- a loan
     STM (Either (OfferLoan Candy) ())
     -- left reject, right accept
-
-
 \end{minted}
+
+% measured monoids sound nice for aggregating payments
+% integer vs fractional fungibible
+
+\end{frame}
+
+
+\begin{frame}[fragile]\frametitle{i want to compose these!}
+
+\begin{minted}{haskell}
+tranche :: IQ BubbleGumm -> IQ BubbleGum
+          -> IO (OQ BubbleGum, OQ BubbleGum)
+tranche iq1 iq2 = do
+    (iqA,oqA) <- makeQueueIO
+    (iqB,oqB) <- makeQueueIO
+    let doit :: Int ->  IQ BubbleGum
+                -> IQ BubbleGum -> IO ()
+        doit ct iqA iqB = ..
+        ... next slide
+    _ <- forkIO doit
+\end{minted}
+
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{composing continued}
+    \begin{minted}{haskell}
+doit :: Int ->  IQ BubbleGum
+          -> IQ BubbleGum -> IO ()
+doit ct iqA iqB = do
+   howMuch <- atomically
+   (do ma <- tryTake iqA
+      mb <- tryTake iqB
+      case (ma,mb) of
+        (Nothing,Nothing) -> return 0
+        (Just ra, Nothing) -> do
+          if ct > 10
+            then putQ oqB ra >> return 1
+            else putQ oqA ra >> return 1
+        (Nothing,Just ra) ->  ...
+        (Just ra,Just rb) ->
+          if ct <= 8 then  ...
+          else if ct == 9  then ..
+          else if ct >= 10 then .. )
+
+    \end{minted}
 
 
 \end{frame}
@@ -285,6 +332,8 @@ this version of uncurry doesn't allow an exceptional definition of first!
 \begin{frame}
   \frametitle{Demand Analysis}
   What's the relationship to demand analysis?
+
+  GHC ALREADY has a very precise sort of linear logic, ... usage annotations
 \end{frame}
 
 \begin{frame}

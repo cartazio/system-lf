@@ -9,3 +9,4 @@ notes+expositions+presentations/2017_HIW_GHC_Core_Linear_Logic_Friends/latex/201
 *.pygtex
 2017hiwslides.vrb
 *.pygstyle
+*.synctex(busy)
