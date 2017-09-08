@@ -300,20 +300,26 @@ tranche oq1 oq2 = do
 doit :: Int -> IO ()
 doit ct  = do
   howMuch <- atomically (
-  do ma <- tryTake oq1
-     mb <- tryTake oq2
-     case (ma,mb) of
+  do  ma <- tryTake oq1
+      mb <- tryTake oq2
+      delt <- case (ma,mb) of
         (Nothing,Nothing) -> retry
         --  sleep till new stuff
         (Just ra, Nothing) -> do
           if ct > 10
             then putQ oqB ra >> return 1
             else putQ oqA ra >> return 1
-        (Nothing,Just ra) ->  ...
+        (Nothing,Just ra) ->  do
+          if ct > 10
+            then putQ oqB ra >> return 1
+            else putQ oqA ra >> return 1
         (Just ra,Just rb) ->
-          if ct <= 8 then  ...
-          else if ct == 9  then ..
-          else if ct >= 10 then .. )
+          (if ct <= 8 then putQ oqA ra >> putQ oqA rb
+           else if ct == 9  then putQ oqA ra >> putQ oqB rb
+           else if ct >= 10 then putQ oqA rb >> putQ oqA rb)
+           >> return 2 )
+      doit (ct + delta)
+
 
     \end{minted}
 
@@ -326,6 +332,7 @@ doit ct  = do
 % \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{linear typing is unsound in the presence of catchable exceptions implicit }
 Consider this innocent program, \ldots are we cartesian closed or merely (symmetric) braided monoidal?
 % this should be 2-3 slides in after 1-2 terms/ideas some intro stuff
 % \begin{onlyenv}<1>
@@ -347,6 +354,18 @@ nonLinear pr = catch
 \end{minted}
 \end{frame}
 
+\begin{frame}\frametitle{Possible strategies to recover soundness?}
+\begin{enumerate}[(i)]
+  \item Type and Effect systems!  % solves the implicit effects
+  \item restrict how pure exceptions can be caught.
+  \item only consider exceptions in an STM / transactional effects with rollback setting.
+        (this is the semantics we're delving into for our work).
+  \item Perhaps some sort of checkpointing style roll back as seen
+\end{enumerate}
+
+These strategies all seem like an ill fit for GHC today.
+
+\end{frame}
 
 % \begin{frame}[fragile]
 % what next? What if we replaced our definition of uncurry?
