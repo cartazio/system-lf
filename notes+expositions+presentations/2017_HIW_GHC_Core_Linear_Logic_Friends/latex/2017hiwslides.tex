@@ -201,11 +201,11 @@ Joel & Carter  \\
 
 
 
-\begin{frame}[t]\frametitle{title}
+% \begin{frame}[t]\frametitle{title}
 
 
 
-\end{frame}
+% \end{frame}
 
 % what is linear logic (high level)
 
@@ -250,32 +250,30 @@ takeLoan :: String ->  -- name of loan
 
 
 \begin{frame}[fragile]\frametitle{i want to compose these!}
-
 \begin{minted}{haskell}
-tranche :: IQ BubbleGumm -> IQ BubbleGum
+tranche :: OQ BubbleGumm -> OQ BubbleGum
           -> IO (OQ BubbleGum, OQ BubbleGum)
-tranche iq1 iq2 = do
+tranche oq1 oq2 = do
     (iqA,oqA) <- makeQueueIO
     (iqB,oqB) <- makeQueueIO
-    let doit :: Int ->  IQ BubbleGum
-                -> IQ BubbleGum -> IO ()
+    let doit :: Int -> IO ()
         doit ct iqA iqB = ..
         ... next slide
-    _ <- forkIO doit
+    _ <- forkIO (doit 0)
+    return ()
 \end{minted}
-
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{composing continued}
     \begin{minted}{haskell}
-doit :: Int ->  IQ BubbleGum
-          -> IQ BubbleGum -> IO ()
-doit ct iqA iqB = do
-   howMuch <- atomically
-   (do ma <- tryTake iqA
-      mb <- tryTake iqB
-      case (ma,mb) of
-        (Nothing,Nothing) -> return 0
+doit :: Int -> IO ()
+doit ct  = do
+  howMuch <- atomically (
+  do ma <- tryTake oq1
+     mb <- tryTake oq2
+     case (ma,mb) of
+        (Nothing,Nothing) -> retry
+        --  sleep till new stuff
         (Just ra, Nothing) -> do
           if ct > 10
             then putQ oqB ra >> return 1
