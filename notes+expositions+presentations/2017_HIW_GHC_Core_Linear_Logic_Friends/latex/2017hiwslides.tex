@@ -201,9 +201,22 @@ Joel & Carter  \\
   \item Our work is motivated by the need to design database and software systems
   that support modeling ownership and authorization correctly.
   \item This could be called ``Blockchain for finance/enterprise\ldots done right''
-  \item
+  \item And our particular approach is around developing a functional model
+  of linear logic, applying the compiler engineering knowledge ghc and related
+  systems embody, and our work is about building a programming language
 \end{enumerate}
 
+\end{frame}
+
+\begin{frame}\frametitle{What we're here to share today}
+  \begin{enumerate}[(i)]
+    \item Motivate linearity/ownership with some simple but nontrivial examples of ownership modeled
+    in Haskell. We only need the idea of a linear pair for this.
+    \item Show how catchable pure exceptions break type safety/soundness of linearity.
+    \item Explain the 6 different type formers of classical linear logic in terms of
+    their functional haskell analogues.
+    \item
+  \end{enumerate}
 \end{frame}
 
 
@@ -252,9 +265,20 @@ takeLoan :: String ->  -- name of loan
 % measured monoids sound nice for aggregating payments
 % integer vs fractional fungibible
 
+\begin{frame}
+  \frametitle{What can I do with my bubble gum OutQueue's?}
+Alice and Bob both owe me some bubblegum. Rick (who's very risk averse) will happily pay me
+for the first 10 pieces of gum I receive, and his friend Morty (always taking risks) will
+also pay me for any gum after the first 10! In some circles, this sort of rearrangement
+is called a \emph{Sequential Tranche}. Sounds like a great job of Concurrency!
 
 
-\begin{frame}[fragile]\frametitle{i want to compose these!}
+So lets figure out how to recompose the OutQueues from Alice and Bob into new
+OutQueues which Rick and Morty can pay me for.
+
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Concurrency Composes ownership}
 \begin{minted}{haskell}
 tranche :: OQ BubbleGumm -> OQ BubbleGum
           -> IO (OQ BubbleGum, OQ BubbleGum)
