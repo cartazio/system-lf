@@ -58,7 +58,7 @@
 % \lfoot{}\cfoot{\thepage}\rfoot{}
 
 
-
+\usepackage{txfonts}
 \usepackage[pdftex]{graphicx}
 %\usepackage[usenames,dvipsnames]{color}
 %\usepackage{tikz}
@@ -333,7 +333,7 @@ doit ct  = do
 
 \begin{frame}[fragile]
 \frametitle{linear typing is unsound in the presence of catchable exceptions implicit }
-Consider this innocent program, \ldots are we cartesian closed or merely (symmetric) braided monoidal?
+% Consider this innocent program, \ldots are we cartesian closed or merely (symmetric) braided monoidal?
 % this should be 2-3 slides in after 1-2 terms/ideas some intro stuff
 % \begin{onlyenv}<1>
 \begin{minted}{haskell}
@@ -355,6 +355,9 @@ nonLinear pr = catch
 \end{frame}
 
 \begin{frame}\frametitle{Possible strategies to recover soundness?}
+Linear types, even just pairs \ldots seem to be unsound in the
+face of implicit effects.
+
 \begin{enumerate}[(i)]
   \item Type and Effect systems!  % solves the implicit effects
   \item restrict how pure exceptions can be caught.
@@ -366,6 +369,81 @@ nonLinear pr = catch
 These strategies all seem like an ill fit for GHC today.
 
 \end{frame}
+
+
+\begin{frame}
+  \frametitle{Back to business: Linear Logic for the Working Haskeller}
+The big  6 type operators in linear logic are:
+
+\begin{tabular}{c|r|c|l}
+Linear & Haskell & CPS (\neg \neg) & Name \\
+\hline
+\( \neg X \) & \( \neg X \) \emph{or} \( X \rightarrow \forall a.a  \) &  same   &  negation \\
+\( A \otimes B \) & \( (A,B) \) &  & tensor or product \\
+\( A \oplus B \) & \( A + B  \) & & sum or either \\
+\( A \& B \) & ? & \( \neg (\neg A + \neg B) \) & With or (External) Choice \\
+\( A \invamp B \) & ? & \( \neg (\neg A , \neg B) \) & Par \\
+
+\end{tabular}
+% \(\invamp   \)
+\end{frame}
+
+\begin{frame}\frametitle{We dont always need linearity to get benefits from linear logic}
+By relating various control and abstraction representations to their linear logical
+siblings, a number of really lovely and potentially useful design clarifications
+arise!
+
+
+\end{frame}
+
+\begin{frame}\frametitle{What is \( \& \) (Choice)}
+Its sort of a ``right hand side of case expressions'' that can act as a generalized
+join point representation.
+
+% EXPLAIN THE SHARED closures conditions
+
+
+\end{frame}
+
+
+\begin{frame}\frametitle{What is Par?}
+    %  a sort of generalized sibling to ForkIO!
+    %
+
+
+\end{frame}
+
+\begin{frame}
+  JOIN POINTS and how they relate to CHOICE \( \&  \)
+\end{frame}
+
+\begin{frame}\frametitle{How can Choice help }
+
+
+
+\end{frame}
+
+
+\begin{frame}\frametitle{GHC Core already has generalized Linear types}
+
+Demand analysis and the usage info on every binding \emph{IS} a very interesting
+fancy linear type system! It just lives in a different place than the rest of the
+types... and are only used by the optimizer!
+
+linearity / usage here roughly means ``entered the closure'', which is stronger
+than some other notions that seem to be used.
+(the range of possible notions isn't cleanly articulated anywhere I've seen)
+
+\end{frame}
+
+
+\begin{frame}\frametitle{Units, so many units}
+
+
+
+\end{frame}
+
+%
 
 % \begin{frame}[fragile]
 % what next? What if we replaced our definition of uncurry?
