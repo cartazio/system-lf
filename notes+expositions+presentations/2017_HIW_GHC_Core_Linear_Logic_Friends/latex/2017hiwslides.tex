@@ -279,18 +279,23 @@ OutQueues which Rick and Morty can pay me for.
 
 \end{frame}
 
-\begin{frame}[fragile]\frametitle{Concurrency Composes ownership}
+\begin{frame}[fragile]
+\frametitle{Concurrency Composes Ownership (1/2)}
+
 \begin{minted}{haskell}
+newInOutQ :: IO (InQ a, OutQ a)
+newInOutQ = (InQ &&& OutQ) <$> newTQueueIO
+
 tranche :: OQ BubbleGumm -> OQ BubbleGum
-          -> IO (OQ BubbleGum, OQ BubbleGum)
+        -> IO (OQ BubbleGum, OQ BubbleGum)
 tranche oq1 oq2 = do
-    (iqA,oqA) <- makeQueueIO
-    (iqB,oqB) <- makeQueueIO
-    let doit :: Int -> IO ()
-        doit ct iqA iqB = ..
-        ... next slide
-    _ <- forkIO (doit 0)
-    return ()
+    (iqA, oqA) <- newInOutQ
+    (iqB, oqB) <- newInOutQ
+    forkIO (doit 0 FIXME)
+    return (oqA, oqB)
+
+doit :: Int -> InQ a -> InQ b FIXME -> IO ()
+doit ct iqA iqB FIXME = ...
 \end{minted}
 \end{frame}
 
