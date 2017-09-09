@@ -245,22 +245,26 @@ Our opinions are our own. etc etc :)
 \frametitle{What \emph{is} a Loan?}
 
 \begin{minted}{haskell}
+import Control.Concurrent.STM
 import Control.Concurrent.STM.TQueue
-import Control.Concurrent.STM.TVar
+
+data Chocolate
+data BubbleGum
+
 newtype InQ  a = InQ  (TQueue a)
 newtype OutQ a = OutQ (TQueue a)
 
-data Loan a = Loan
+type Repay = InQ BubbleGum
+type Debt = OutQ BubbleGum
+
+data Loan = Loan
   { principal :: Chocolate
-  , repay     :: InQ BubbleGum }
+  , repay     :: Repay }
 
-data Debt = Debt (OutQ BubbleGum)
-
-type LoanId = String
-takeLoan :: LoanId -> Loan -> TVar (Map LoanId Debt) -- my wallet
-         -> STM (Either (Loan Candy) ()) -- ether reject or accept
+-- So many offers. Do I want to take out this loan?
+assessLoan :: Loan -> TVar (Set Loan) -> STM (Maybe Loan)
+assessLoan loan wallet = undefined
 \end{minted}
-% FIXME what does takeLoan do?
 \end{frame}
 
 % measured monoids sound nice for aggregating payments
