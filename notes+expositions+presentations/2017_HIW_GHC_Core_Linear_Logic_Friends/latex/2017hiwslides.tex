@@ -288,7 +288,7 @@ OutQueues which Rick and Morty can pay me for.
 
 \begin{minted}{haskell}
 newDebt :: IO (Repay, Debt)
-newDebt = (InQ &&& OutQ) <$> newTQueueIO
+newDebt = fmap (InQ &&& OutQ) newTQueueIO
 
 tranche :: Debt -> Debt -> IO (Debt, Debt)
 tranche alice bob = do
@@ -406,7 +406,7 @@ in the same scope!
 
 \begin{frame}[fragile]\frametitle{Choice makes case expressions first class}
 
-at least for join points, can we
+at least for join points, we can go first class
 \begin{minted}{haskell}
 case :: ( a + b , a & b ) -> forall r . r
 \end{minted}
@@ -414,7 +414,21 @@ case :: ( a + b , a & b ) -> forall r . r
 
 \end{frame}
 
-\begin{frame}\frametitle{What is Par?}
+\begin{frame}[fragile]\frametitle{What is Par?}
+consider the humble forkIO
+
+\begin{minted}{haskell}
+forkIO :: IO () -> IO ThreadId
+forkIOCPS :: IO ()->(ThreadId -> IO ())-> forall c . c
+forkSimpleCPS ::
+  (() -> forall c.c ,() -> forall c.c ) -> forall c . c
+\end{minted}
+hrmmm ... forkSimpleCPS's type can be written \( \neg (\neg (), \neg ()) \),
+which is a special case of \( \neg (\neg a , \neg b) \). Par is a generalization of
+forkIO sans ThreadID!
+
+And its resource aware!
+
     %  a sort of generalized sibling to ForkIO!
     %
 \end{frame}
@@ -434,6 +448,7 @@ case :: ( a + b , a & b ) -> forall r . r
 % \begin{centering}
 
 
+\end{frame}
 
 \begin{frame}\frametitle{GHC Core already has generalized Linear types}
 
@@ -449,7 +464,6 @@ than some other notions that seem to be used.
 \end{frame}
 
 
-\end{frame}
 
 %
 
