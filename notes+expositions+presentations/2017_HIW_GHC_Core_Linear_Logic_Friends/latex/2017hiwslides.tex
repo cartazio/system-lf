@@ -339,7 +339,7 @@ import Control.Exception
 
 data Fst a = Only a deriving (Show, Typeable, Exception)
 
-badFst :: (Typeable a, Show a) => a -> b -> a
+badFst :: (Typeable a, Show a) => a -> b -> c
 badFst a = throw (Only a)
 
 notOnly (Only a) = a
