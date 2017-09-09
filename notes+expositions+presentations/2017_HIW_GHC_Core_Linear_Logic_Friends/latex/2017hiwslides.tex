@@ -248,11 +248,8 @@ Our opinions are our own. etc etc :)
 import Control.Concurrent.STM
 import Control.Concurrent.STM.TQueue
 
-data Chocolate
-data BubbleGum
-
-newtype InQ  a = InQ  (TQueue a)
-newtype OutQ a = OutQ (TQueue a)
+newtype InQ  a = InQ  { inQ  :: TQueue a }
+newtype OutQ a = OutQ { outQ :: TQueue a }
 
 type Repay = InQ BubbleGum
 type Debt = OutQ BubbleGum
@@ -309,13 +306,13 @@ allocate alice bob morty rick remain = do
 
 \begin{minted}{haskell}
 divvy :: Debt -> Debt -> Repay -> Repay -> Int -> STM Int
-divvy (OutQ alice) (OutQ bob) (InQ morty) (InQ rick) remain = do
-    ma <- tryReadTQueue alice
-    mb <- tryReadTQueue bob
+divvy alice bob morty rick remain = do
+    ma <- tryReadTQueue (outQ alice)
+    mb <- tryReadTQueue (outQ bob)
     let available = catMaybes [ma, mb]
     let (safe, risky) = splitAt remain available
-    mapM_ (writeTQueue morty) safe
-    mapM_ (writeTQueue rick) risky
+    mapM_ (writeTQueue (inQ morty)) safe
+    mapM_ (writeTQueue (inQ rick)) risky
     return (length available)
 \end{minted}
 \end{frame}
