@@ -283,19 +283,20 @@ OutQueues which Rick and Morty can pay me for.
 \frametitle{Concurrency Composes Ownership (1/2)}
 
 \begin{minted}{haskell}
-newInOutQ :: IO (InQ a, OutQ a)
-newInOutQ = (InQ &&& OutQ) <$> newTQueueIO
+newDebt :: IO (Repay, Debt)
+newDebt = (InQ &&& OutQ) <$> newTQueueIO
 
-tranche :: OQ BubbleGumm -> OQ BubbleGum
-        -> IO (OQ BubbleGum, OQ BubbleGum)
-tranche oq1 oq2 = do
-    (iqA, oqA) <- newInOutQ
-    (iqB, oqB) <- newInOutQ
-    forkIO (doit 0 FIXME)
-    return (oqA, oqB)
+tranche :: Debt -> Debt -> IO (Debt, Debt)
+tranche alice bob = do
+    (mortyIn, morty) <- newDebt
+    (rickIn, rick) <- newDebt
+    _ <- forkIO (allocate alice bob mortyIn rickIn 10)
+    return (morty, rick)
 
-doit :: Int -> InQ a -> InQ b FIXME -> IO ()
-doit ct iqA iqB FIXME = ...
+allocate :: Debt -> Debt -> Repay -> Repay -> Int -> IO ()
+allocate alice bob morty rick remain = do
+    taken <- atomically (divvy alice bob morty rick remain)
+    allocate alice bob morty rick (remain - taken)
 \end{minted}
 \end{frame}
 
@@ -303,23 +304,15 @@ doit ct iqA iqB FIXME = ...
 \frametitle{Concurrency Composes Ownership (2/2)}
 
 \begin{minted}{haskell}
-doit :: Int -> FIXME IO ()
-doit ct FIXME = doit . (+) ct =<< atomically foo where
-    foo = do
-        ma <- tryTake oq1
-        mb <- tryTake oq2
-        -- FIXME: why not catMaybes [ma, mb] ?
-        case (ma, mb) of
-            (Nothing, Nothing) -> retry
-            (Just ra, Nothing) -> 1 <$ if ct > 10
-                then putQ oqB ra else putQ oqA ra
-            (Nothing, Just ra) -> 1 <$ if ct > 10
-                then putQ oqB ra else putQ oqA ra
-            (Just ra, Just rb) -> 2 <$ case compare ct 9 of
-                -- FIXME: these don't look right, or at least I'm not seeing the symmetry
-                LT -> putQ oqA ra >> putQ oqA rb
-                EQ -> putQ oqA ra >> putQ oqB rb
-                GT -> putQ oqA rb >> putQ oqA rb
+divvy :: Debt -> Debt -> Repay -> Repay -> Int -> STM Int
+divvy (OutQ alice) (OutQ bob) (InQ morty) (InQ rick) remain = do
+    ma <- tryReadTQueue alice
+    mb <- tryReadTQueue bob
+    let available = catMaybes [ma, mb]
+    let (safe, risky) = splitAt remain available
+    mapM_ (writeTQueue morty) safe
+    mapM_ (writeTQueue rick) risky
+    return (length available)
 \end{minted}
 \end{frame}
 
