@@ -382,6 +382,9 @@ Linear & Haskell & HS CPS (\neg \neg) & Name \\
 \( A \invamp B \) & ? & \( \neg (\neg A , \neg B) \) & Par \\
 
 \end{tabular}
+
+Aside: If you start with a function type that has unboxed tuple arguments/results
+and sum types, you can encode all of these in the CPS style. See eg: types are calling conventions.
 % \(\invamp   \)
 \end{frame}
 
@@ -397,11 +400,22 @@ arise!
 Its sort of a ``right hand side of case expressions'' that can act as a generalized
 join point representation.
 
-% EXPLAIN THE SHARED closures conditions
+Modeling the RHS of a case as a collection of functions may force needless closure
+allocation when in fact that all share the same environment! Choice (\&) can
+be used to encapsulate a collection of continuations (join points) that work
+in the same scope!
+\end{frame}
+
+
+\begin{frame}[fragile]\frametitle{Choice makes case expressions first class}
+
+at least for join points
+\begin{minted}{haskell}
+case :: ( a + b , a & b ) -> forall r . r
+\end{minted}
 
 
 \end{frame}
-
 
 \begin{frame}\frametitle{What is Par?}
     %  a sort of generalized sibling to ForkIO!
