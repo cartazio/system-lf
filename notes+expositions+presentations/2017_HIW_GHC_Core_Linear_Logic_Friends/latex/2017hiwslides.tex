@@ -409,7 +409,7 @@ in the same scope!
 
 \begin{frame}[fragile]\frametitle{Choice makes case expressions first class}
 
-at least for join points
+at least for join points, can we
 \begin{minted}{haskell}
 case :: ( a + b , a & b ) -> forall r . r
 \end{minted}
@@ -420,19 +420,22 @@ case :: ( a + b , a & b ) -> forall r . r
 \begin{frame}\frametitle{What is Par?}
     %  a sort of generalized sibling to ForkIO!
     %
-
-
 \end{frame}
 
-\begin{frame}
-  JOIN POINTS and how they relate to CHOICE \( \&  \)
-\end{frame}
-
-\begin{frame}\frametitle{How can Choice help }
 
 
 
-\end{frame}
+\begin{frame}[fragile]\frametitle{Units, so many units}
+
+% \begin{centering}
+\begin{tabular}{lc}
+ \( \& \) & empty case \\ \hline
+\( \oplus \) & Void type \\ \hline
+\( \otimes \) & \( () \) aka \(1 \) \\ \hline
+\( \invamp \) & close thread / finalize
+\end{tabular}
+% \begin{centering}
+
 
 
 \begin{frame}\frametitle{GHC Core already has generalized Linear types}
@@ -447,10 +450,6 @@ than some other notions that seem to be used.
 (the range of possible notions isn't cleanly articulated anywhere I've seen)
 
 \end{frame}
-
-
-\begin{frame}\frametitle{Units, so many units}
-
 
 
 \end{frame}
