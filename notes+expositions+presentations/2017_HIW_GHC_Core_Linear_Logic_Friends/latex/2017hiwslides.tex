@@ -6,8 +6,9 @@
 %
 \documentclass[11pt,reqno]{beamer}
 
-% \usepackage{hyperref}
+\usepackage{hyperref}
 % \usepackage{url}
+
 
 \usepackage{enumerate}
 \usepackage{microtype}
@@ -59,7 +60,9 @@
 
 
 \usepackage{txfonts}
-\usepackage[pdftex]{graphicx}
+% \usepackage[pdftex]{graphicx}
+\usepackage{graphicx}
+%
 %\usepackage[usenames,dvipsnames]{color}
 %\usepackage{tikz}
 % \usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,positioning,fit,matrix,calc}
@@ -178,9 +181,9 @@
 \newcommand{\lilomega}[1]{\ensuremath{\omega\Paren{#1}}}
 
 \begin{document}
-\title{GHC Core and Linear Logic should be best friends \\ Haskell Implementors}
+\title{GHC Core and Linear Logic should be best friends \\ Haskell Implementors Workshop}
 \author{Carter Tazio Schonwald \& Joel Burget}
-\date{created: 2017-08-16\\ presented 2017-09-19 \\ last generated \now}
+\date{created: 2017-08-16\\ presented 2017-09-09 \\ last generated \now}
 
 \maketitle
 
@@ -208,7 +211,6 @@ Our opinions are our own. etc etc :)
   systems embody, and our work is about building a programming language
   that prevents errors in ownership descriptions.
 \end{enumerate}
-
 \end{frame}
 
 \begin{frame}\frametitle{What we're here to share today}
@@ -478,6 +480,8 @@ usually loosely inspired by the lattice induced by the powerset of
 \begin{frame}\frametitle{Thanks!}
     questions?
 
+These slides and related materials can be found online at
+\url{https://github.com/cartazio/system-lf}
 
 \end{frame}
 %
