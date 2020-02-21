@@ -180,25 +180,24 @@
 \newcommand{\liloh}[1]{\ensuremath{o\Paren{#1}}}
 \newcommand{\lilomega}[1]{\ensuremath{\omega\Paren{#1}}}
 
+\title{GHC Core and Linear Logic should be best friends - Haskell Implementors Workshop}
+\author{Carter Tazio Schonwald }
+\date{created: 2017-08-16 -  presented 2017-09-09  - last generated \now}
+
 \begin{document}
-\title{GHC Core and Linear Logic should be best friends \\ Haskell Implementors Workshop}
-\author{Carter Tazio Schonwald \& Joel Burget}
-\date{created: 2017-08-16\\ presented 2017-09-09 \\ last generated \now}
+
+
 
 \maketitle
 
 \begin{frame}
-  \frametitle{Introduction - Authors}
+  \frametitle{Introduction - Carter Schonwald}
 
-\begin{centering}
-\begin{tabular}{l|r}
-Joel & Carter  \\
-  \includegraphics[scale=0.06]{../joelpics/joel.jpg}   &
-  \includegraphics[scale=0.22]{../joelpics/IMG_4133.png}
-\end{tabular}
-\end{centering}
 
-Our opinions are our own. etc etc :)
+
+my opinions are my own. etc etc :)
+
+(and many thanks for many collaborators over time)
 \end{frame}
 
 \begin{frame}\frametitle{What is context of our work?}
@@ -384,13 +383,15 @@ and sum types, you can encode all of these in the CPS style. See eg: types are c
 % \(\invamp   \)
 \end{frame}
 
+
+
 \begin{frame}\frametitle{We dont always need linearity to get benefits from linear logic}
 By relating various control and abstraction representations to their linear logical
 siblings, a number of really lovely and potentially useful design clarifications
 arise!
-
-
 \end{frame}
+
+
 
 \begin{frame}\frametitle{What is \( \& \) (Choice)}
 Its sort of a ``right hand side of case expressions'' that can act as a generalized
@@ -410,8 +411,9 @@ at least for join points, we can go first class
 case :: ( a + b , a & b ) -> forall r . r
 \end{minted}
 
-
 \end{frame}
+
+
 
 \begin{frame}[fragile]\frametitle{What is Par?}
 consider the humble forkIO
@@ -446,8 +448,9 @@ And its resource aware!
 \end{tabular}
 % \begin{centering}
 
-
 \end{frame}
+
+
 
 \begin{frame}\frametitle{GHC Core already has generalized Linear types}
 
@@ -472,7 +475,6 @@ usually loosely inspired by the lattice induced by the powerset of
  \(  >1, \equiv 1,  <1 \).
 
  Lots of new/ongoing work on that problem, no best answer yet.
-
 
 \end{frame}
 
